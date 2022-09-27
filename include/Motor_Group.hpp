@@ -45,10 +45,10 @@ public:
   /**
    * @param ports A list of integers representing the ports for each motor.
    * Ports are input like so: {<port1>, <port2>, etc.}
-   * @param revs A list of whether each motor in the group is reversed
+   * @param reverses A list of whether each motor in the group is reversed
    */
   Motor_Group(std::initializer_list<int> ports,
-              std::initializer_list<bool> revs);
+              std::initializer_list<bool> reverses);
 
   /**
    * @param ports A list of integers representing the ports for each motor.
@@ -64,20 +64,20 @@ public:
   /**
    * @param ports A list of integers representing the ports for each motor.
    * Ports are input like so: {<port1>, <port2>, etc.}
-   * @param revs A list of whether each motor in the group is reversed
+   * @param reverses A list of whether each motor in the group is reversed
    * @param gearing The new gearing for the motors - of type
    * pros::motor_gearset_e_t. Represents the internal gear cartidge in the
    * motors. Every motor in the group should have the same internal gear
    * cartidge.
    */
   Motor_Group(std::initializer_list<int> ports,
-              std::initializer_list<bool> revs,
+              std::initializer_list<bool> reverses,
               pros::motor_gearset_e_t gearing);
 
   /**
    * @param ports A list of integers representing the ports for each motor.
    * Ports are input like so: {<port1>, <port2>, etc.}
-   * @param revs A list of whether each motor in the group is reversed
+   * @param reverses A list of whether each motor in the group is reversed
    * @param gearing The new gearing for the motors - of type
    * pros::motor_gearset_e_t. Represents the internal gear cartidge in the
    * motors. Every motor in the group should have the same internal gear
@@ -86,7 +86,8 @@ public:
    * pros::motor_encoder_units_e_t
    */
   Motor_Group(std::initializer_list<int> ports,
-              std::initializer_list<bool> revs, pros::motor_gearset_e_t gearing,
+              std::initializer_list<bool> reverses,
+              pros::motor_gearset_e_t gearing,
               pros::motor_encoder_units_e_t encoder_units);
 
   /*-------------------

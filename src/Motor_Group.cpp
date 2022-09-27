@@ -6,9 +6,9 @@ Motor_Group::Motor_Group(std::initializer_list<int> ports)
     : motorPorts{ports} {}
 
 Motor_Group::Motor_Group(std::initializer_list<int> ports,
-                         std::initializer_list<bool> revs)
+                         std::initializer_list<bool> reverses)
     : motorPorts{ports} {
-  set_reversed(revs);
+  set_reversed(reverses);
 }
 
 Motor_Group::Motor_Group(std::initializer_list<int> ports,
@@ -18,20 +18,20 @@ Motor_Group::Motor_Group(std::initializer_list<int> ports,
 }
 
 Motor_Group::Motor_Group(std::initializer_list<int> ports,
-                         std::initializer_list<bool> revs,
+                         std::initializer_list<bool> reverses,
                          pros::motor_gearset_e_t gearing)
     : motorPorts{ports} {
   set_gearing(gearing);
-  set_reversed(revs);
+  set_reversed(reverses);
 }
 
 Motor_Group::Motor_Group(std::initializer_list<int> ports,
-                         std::initializer_list<bool> revs,
+                         std::initializer_list<bool> reverses,
                          pros::motor_gearset_e_t gearing,
                          pros::motor_encoder_units_e_t encoder_units)
     : motorPorts{ports} {
   set_gearing(gearing);
-  set_reversed(revs);
+  set_reversed(reverses);
   set_encoder_units(encoder_units);
 }
 
