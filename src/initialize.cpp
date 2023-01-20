@@ -1,20 +1,12 @@
 #include "main.h"
 
-Drivetrain drive({20, 19, 18, 17, 16}, {10, 9, 8, 7, 6},
-                 {true, false, true, false, true},
-                 {false, true, false, true, false});
-Intake intake({15, 14}, {true, false});
-Flywheel flywheel({5}, {false});
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
-    flywheel.set_pid_consts(50, 0.1, 1);
-    flywheel.init_pid_task();
-}
+void initialize() {}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
