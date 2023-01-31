@@ -1,4 +1,5 @@
 #include "Drivetrain.hpp"
+#include "utils.h"
 
 Drivetrain::Drivetrain(std::initializer_list<int> left_ports,
                        std::initializer_list<int> right_ports,
@@ -8,6 +9,119 @@ Drivetrain::Drivetrain(std::initializer_list<int> left_ports,
       right_motors(right_ports, right_revs) {
     left_motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
     right_motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+}
+
+void Drivetrain::add_adi_encoders(char left_encdr_top_port,
+                                  char left_encdr_bot_port, bool left_encdr_rev,
+                                  char right_encdr_top_port,
+                                  char right_encdr_bot_port,
+                                  bool right_encdr_rev) {
+    using_encdrs = true;
+    left_encdr = pros::c::adi_encoder_init(left_encdr_top_port,
+                                           left_encdr_bot_port, left_encdr_rev);
+
+    right_encdr = pros::c::adi_encoder_init(
+        right_encdr_top_port, right_encdr_bot_port, right_encdr_rev);
+}
+
+void Drivetrain::pid_task_fn() {
+    double left_integral = 0;
+    double left_prev_error = 0;
+    double left_error = 0;
+
+    double right_integral = 0;
+    double right_prev_error = 0;
+    double right_error = 0;
+
+    while (true) {
+        if (using_encdrs) {
+            left_error = left_targ - pros::c::adi_encoder_get(left_encdr);
+            right_error = right_targ - pros::c::adi_encoder_get(right_encdr);
+        } else {
+            left_error = left_targ - left_motors.get_avg_position();
+            right_error = right_targ - right_motors.get_avg_position();
+        }
+
+        if (fabs(left_error) < settled_threshold &&
+            fabs(right_error) < settled_threshold)
+            is_settled = true;
+        else
+            is_settled = false;
+
+        int left_voltage, right_voltage;
+
+        if (use_turn_consts) {
+            left_voltage = pid(kP_turn, kI_turn, kD_turn, left_error,
+                               &left_integral, &left_prev_error);
+            right_voltage = pid(kP_turn, kI_turn, kD_turn, right_error,
+                                &right_integral, &right_prev_error);
+        } else {
+            left_voltage = pid(kP_straight, kI_straight, kD_straight,
+                               left_error, &left_integral, &left_prev_error);
+            right_voltage = pid(kP_turn, kI_turn, kD_turn, right_error,
+                                &right_integral, &right_prev_error);
+        }
+
+        if (abs(left_voltage) > 12000)
+            left_voltage = copysign(12000, left_voltage);
+        if (abs(right_voltage) > 12000)
+            right_voltage = copysign(12000, right_voltage);
+
+        left_motors.move_voltage(left_voltage);
+        right_motors.move_voltage(right_voltage);
+
+        pros::delay(2);
+    }
+}
+
+void Drivetrain::set_pid_straight_consts(double Pconst, double Iconst,
+                                         double Dconst) {
+    kP_straight = Pconst;
+    kI_straight = Iconst;
+    kD_straight = Dconst;
+}
+
+void Drivetrain::set_pid_turn_consts(double Pconst, double Iconst,
+                                     double Dconst) {
+    kP_turn = Pconst;
+    kI_turn = Iconst;
+    kD_turn = Dconst;
+}
+
+void Drivetrain::move_straight(double inches) {
+    // Convert inches to degrees for the wheels to rotate
+    double temp = inches / tracking_wheel_radius * 180 / M_PI;
+    is_settled = false;
+
+    left_targ = temp;
+    right_targ = temp;
+}
+void Drivetrain::turn_angle(double angle) {
+    // Convert the angle to turn into degrees for the wheels to rotate
+    // This consists of 2 parts. First, we turn the angle into the number of
+    // inches each side needs to move. Then, we turn that into degrees
+    double temp = (angle * track_width * (M_PI / 180)) /
+                  (tracking_wheel_radius * 180 / M_PI);
+    is_settled = false;
+
+    left_targ = temp;
+    right_targ = -temp;
+}
+
+void Drivetrain::init_pid_task() {
+    pid_task =
+        pros::c::task_create(trampoline, this, TASK_PRIORITY_DEFAULT,
+                             TASK_STACK_DEPTH_DEFAULT, "Drivetrain PID Task");
+}
+
+void Drivetrain::end_pid_task() {
+    pros::c::task_delete(pid_task);
+    left_motors.move(0);
+    right_motors.move(0);
+}
+
+void Drivetrain::set_settled_threshold(double threshold) {
+    settled_threshold = threshold;
 }
 
 void Drivetrain::tank_driver(pros::controller_id_e_t controller) {
