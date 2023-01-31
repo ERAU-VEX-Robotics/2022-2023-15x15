@@ -15,6 +15,7 @@
 #include "Motor_Group.hpp"
 #include "pros/adi.h"
 #include "pros/misc.h"
+#include "pros/rtos.h"
 
 class Drivetrain {
   private:
@@ -25,11 +26,11 @@ class Drivetrain {
     // The Drivetrain's PID constants, both for moving straight and for turning
     double kP_straight, kP_turn, kI_straight, kI_turn, kD_straight, kD_turn = 0;
 
-    // The threshold for when to set is_settled to true.
-    double settled_threshold = 0.1;
+    // The threshold for when to set is_settled to true, in degrees.
+    double settled_threshold = 10;
 
     // Variables tracking important information about the drivetrain
-    double track_width, tracking_wheel_radius;
+    double track_radius, tracking_wheel_radius, tracking_wheel_gear_ratio;
 
     // Atomic variables storing the PID controllers targets
     std::atomic<double> left_targ, right_targ = 0;
@@ -166,9 +167,31 @@ class Drivetrain {
     // end of autonomous().
     void end_pid_task();
 
+    // Runs in a while loop until the PID task indicates it has reached its
+    // target.
+    void wait_until_settled();
+
     // Sets the threshold for declaring whether the drivetrain has settled, i.e.
     // has reached its target position.
     void set_settled_threshold(double threshold);
+
+    /**
+     * Function: set_drivetrain_dimensions
+     * This function sets the values of various variables used in autonomous to
+     * calculate the exact target positions for the motors to rotate.
+     * \param tracking_wheel_width The distance between the tracking wheels (the
+     *                             wheels used to measure rotation). It is
+                                   assumed that the wheels are each the same
+                                   distance from the center of the robot.
+     * \param tracking_wheel_rad The radii of the tracking wheels, assumed to be
+                                 the same for both wheels
+     * \param gear_ratio The gear ratio from the wheel to the device measuring
+                         the rotation - should be calculated as (wheel connected
+                         to encoder / wheel connected to the wheel)
+     */
+    void set_drivetrain_dimensions(double tracking_wheel_width,
+                                   double tracking_wheel_rad,
+                                   double gear_ratio);
 
     /**
      * Function: print_telemetry
