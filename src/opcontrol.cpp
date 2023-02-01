@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.h"
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -14,9 +15,9 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  while (true) {
-
-    pros::delay(2);
-  }
-  flywheel.end_pid_task();
+    while (true) {
+        drive.tank_driver(pros::E_CONTROLLER_MASTER);
+        pros::delay(2);
+    }
+    // flywheel.end_pid_task();
 }
