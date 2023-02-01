@@ -13,8 +13,44 @@
  * from where it left off.
  */
 void autonomous() {
-    flywheel.resume_pid_task();
+    // flywheel.resume_pid_task();
     drive.init_pid_task();
-    flywheel.pause_pid_task();
+    // flywheel.pause_pid_task();
+
+    // After scoring roller, move to opposite roller through the low goal
+    drive.move_straight(100);
+    drive.wait_until_settled();
+
+    drive.turn_angle(-90);
+    drive.wait_until_settled();
+
+    drive.move_straight(108);
+    drive.wait_until_settled();
+
+    // Score the roller
+    drive.turn_angle(90);
+    drive.wait_until_settled();
+
+    drive.move_straight(4);
+    drive.wait_until_settled();
+
+    // Back away from roller
+    drive.move_straight(-4);
+    drive.wait_until_settled();
+
+    // Pick up nearest disk on our half of the field
+    drive.turn_angle(135);
+    drive.wait_until_settled();
+
+    drive.move_straight(48);
+    drive.wait_until_settled();
+
+    // Aim for goal and fire
+    drive.turn_angle(80);
+    drive.wait_until_settled();
+
+    drive.move_straight(16);
+    drive.wait_until_settled();
+
     drive.end_pid_task();
 }
