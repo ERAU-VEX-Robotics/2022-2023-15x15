@@ -3,6 +3,7 @@
  */
 
 #include "Intake.hpp"
+#include "pros/rtos.hpp"
 #include <initializer_list>
 
 Intake::Intake(std::initializer_list<int> ports,
@@ -26,7 +27,14 @@ void Intake::in() { motors.move(127); }
 
 void Intake::out() { motors.move(-127); }
 
+void Intake::turn_degree(double degrees) {
+    motors.reset_positions();
+    motors.move_relative(degrees, 200);
+    while (!(fabs(motors.get_avg_position()) >= fabs(degrees)))
+        pros::delay(2);
+}
+
 void Intake::print_telemetry(uint8_t vals_to_print) {
-    printf("Intake Telemetry");
+    printf("Intake Telemetry\n");
     motors.print_telemetry(vals_to_print);
 }

@@ -49,6 +49,10 @@ class Intake {
     // Wraps the necessary code to run the motors to expel disks from the intake
     void out();
 
+    // Rotates the intake a specific number of degrees. Used for the attached
+    // roller rotation mechanism.
+    void turn_degree(double degrees);
+
     /**
      * Function: print_telemetry
      *
