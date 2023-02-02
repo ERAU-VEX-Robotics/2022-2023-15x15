@@ -186,8 +186,8 @@ class Drivetrain {
      * \param tracking_wheel_rad The radii of the tracking wheels, assumed to be
                                  the same for both wheels
      * \param gear_ratio The gear ratio from the wheel to the device measuring
-                         the rotation - should be calculated as (wheel connected
-                         to encoder / wheel connected to the wheel)
+                         the rotation - should be calculated as (gear connected
+                         to encoder) / (gear connected to the wheel)
      */
     void set_drivetrain_dimensions(double tracking_wheel_width,
                                    double tracking_wheel_rad,
