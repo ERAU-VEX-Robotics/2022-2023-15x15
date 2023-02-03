@@ -90,15 +90,14 @@ void Flywheel::driver(pros::controller_id_e_t controller,
     if (pros::c::controller_get_digital_new_press(controller, rev_button)) {
         reversed = !reversed; // Toggle flywheel status
         if (reversed)
-            set_target_velo(-300);
+            set_target_velo(-FLYWHEEL_REV_TARG);
         else
-            set_target_velo(600);
+            set_target_velo(FLYWHEEL_FWD_TARG);
     }
 }
 
 void Flywheel::set_velocity(int16_t velocity) {
-    // Divide velocity by 6 to bring it within valid values for move_velocity
-    motors.move_velocity(velocity / 6);
+    motors.move_velocity(velocity);
 }
 
 void Flywheel::stop() { motors.brake(); }

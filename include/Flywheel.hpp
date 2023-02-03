@@ -13,12 +13,15 @@
 #include <atomic>
 #include <initializer_list>
 
+#define FLYWHEEL_FWD_TARG 200
+#define FLYWHEEL_REV_TARG -100
+
 class Flywheel {
   private:
     // The motor group containing all of the motors on the flywheel
     Motor_Group motors;
 
-    std::atomic<int> flywheel_velo = 600;
+    std::atomic<int> flywheel_velo = FLYWHEEL_FWD_TARG;
 
     double kP, kI, kD = 0;
 
