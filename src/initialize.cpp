@@ -1,6 +1,8 @@
-#include "Drivetrain.hpp"
 #include "main.h"
 Drivetrain drive({18}, {8}, {true}, {false});
+Intake intake({10}, {true});
+Flywheel flywheel({9}, {true});
+Conveyor conveyor({8}, {false});
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -11,6 +13,8 @@ void initialize() {
     drive.set_drivetrain_dimensions(14.5, 2, 1);
     drive.set_pid_straight_consts(100, 0, 0);
     drive.set_pid_turn_consts(100, 0, 0);
+    flywheel.init_pid_task();
+    flywheel.pause_pid_task();
 }
 
 /**
