@@ -1,8 +1,8 @@
 #include "main.h"
-Drivetrain drive({18}, {8}, {true}, {false});
-Intake intake({10}, {true});
-Flywheel flywheel({9}, {true});
-Conveyor conveyor({8}, {false});
+Drivetrain drive({11, 12}, {13, 14}, {false, false}, {true, true});
+Intake intake({9}, {true});
+Flywheel flywheel({17}, {true});
+Conveyor conveyor({16}, {false});
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -13,6 +13,9 @@ void initialize() {
     drive.set_drivetrain_dimensions(14.5, 2, 1);
     drive.set_pid_straight_consts(100, 0, 0);
     drive.set_pid_turn_consts(100, 0, 0);
+    drive.add_adi_encoders('c', 'd', false, 'g', 'h', true);
+
+    flywheel.set_pid_consts(45, 5, 1);
     flywheel.init_pid_task();
     flywheel.pause_pid_task();
 }
