@@ -32,13 +32,18 @@ void Flywheel::pid_task_fn() {
 
         if (fabs(voltage) > 12000)
             voltage = copysign(12000, voltage);
-#ifdef DEBUG
+#ifdef F_DEBUG
         printf("Flywheel error: %.2lf\n", error);
-        printf("Flywheel voltage: %.2lf\n", voltage);
+        printf("Flywheel set voltage: %.2lf\n", voltage);
+        print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
+                        E_MOTOR_GROUP_TELEM_PRINT_CURRENT);
 #endif
         motors.move_voltage(voltage);
-
+#ifdef F_DEBUG
+        pros::delay(200);
+#else
         pros::delay(2);
+#endif
     }
 }
 

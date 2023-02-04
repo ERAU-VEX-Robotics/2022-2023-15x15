@@ -77,7 +77,7 @@ void Drivetrain::pid_task_fn() {
             left_voltage = copysign(12000, left_voltage);
         if (abs(right_voltage) > 12000)
             right_voltage = copysign(12000, right_voltage);
-#ifdef DEBUG
+#ifdef D_DEBUG
         printf("Left Error: %.2lf\nRight Error: %.2lf\n", left_error,
                right_error);
         print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
