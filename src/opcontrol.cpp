@@ -16,9 +16,10 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+    flywheel.resume_pid_task();
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
         pros::delay(2);
     }
-    // flywheel.end_pid_task();
+    flywheel.end_pid_task();
 }

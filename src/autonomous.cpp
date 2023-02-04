@@ -13,9 +13,8 @@
  * from where it left off.
  */
 void autonomous() {
-    // flywheel.resume_pid_task();
+    flywheel.resume_pid_task();
     drive.init_pid_task();
-    // flywheel.pause_pid_task();
 
     // After scoring roller, move to opposite roller through the low goal
     drive.move_straight(100);
@@ -53,4 +52,5 @@ void autonomous() {
     drive.wait_until_settled();
 
     drive.end_pid_task();
+    flywheel.pause_pid_task();
 }
