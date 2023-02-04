@@ -1,5 +1,5 @@
 #include "main.h"
-Drivetrain drive({17, 18}, {15, 16}, {false, false}, {true, true});
+Drivetrain drive({17, 18}, {15, 16}, {true, true}, {false, false});
 Intake intake({9}, {true});
 Flywheel flywheel({19}, {true});
 Conveyor conveyor({20}, {false});
