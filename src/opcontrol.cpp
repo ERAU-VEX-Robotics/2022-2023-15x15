@@ -18,6 +18,8 @@
  */
 void opcontrol() {
     flywheel.resume_pid_task();
+    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
+
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
         flywheel.driver(pros::E_CONTROLLER_MASTER,
@@ -29,6 +31,10 @@ void opcontrol() {
                       pros::E_CONTROLLER_DIGITAL_R2);
 
         pros::delay(2);
+
+        if (pros::c::controller_get_digital_new_press(
+                pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP))
+            pros::c::adi_digital_write('e', true);
     }
     flywheel.end_pid_task();
 }
