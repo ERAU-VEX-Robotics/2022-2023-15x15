@@ -1,4 +1,5 @@
 #include "Motor_Group.hpp"
+#include "externs.hpp"
 #include "main.h"
 #include "pros/misc.h"
 
@@ -19,6 +20,14 @@ void opcontrol() {
     flywheel.resume_pid_task();
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
+        flywheel.driver(pros::E_CONTROLLER_MASTER,
+                        pros::E_CONTROLLER_DIGITAL_L1,
+                        pros::E_CONTROLLER_DIGITAL_L2);
+        conveyor.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
+                        pros::E_CONTROLLER_DIGITAL_B);
+        intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
+                      pros::E_CONTROLLER_DIGITAL_R2);
+
         pros::delay(2);
     }
     flywheel.end_pid_task();
