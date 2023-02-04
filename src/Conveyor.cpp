@@ -11,6 +11,7 @@ Conveyor::Conveyor(std::initializer_list<int> ports,
 
 void Conveyor::forward() { motors.move(127); }
 void Conveyor::reverse() { motors.move(-127); }
+void Conveyor::stop() { motors.move(0); }
 
 void Conveyor::rotate(double degrees) { motors.move_relative(degrees, 200); }
 
