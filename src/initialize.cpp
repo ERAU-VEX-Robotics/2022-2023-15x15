@@ -1,8 +1,9 @@
 #include "main.h"
-Drivetrain drive({11, 12}, {13, 14}, {false, false}, {true, true});
+Drivetrain drive({17, 18}, {15, 16}, {false, false}, {true, true});
 Intake intake({9}, {true});
-Flywheel flywheel({17}, {true});
-Conveyor conveyor({16}, {false});
+Flywheel flywheel({19}, {true});
+Conveyor conveyor({20}, {false});
+Roller roller({10}, {false}, 1);
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
