@@ -28,13 +28,14 @@ void Flywheel::pid_task_fn() {
 
     while (true) {
         error = flywheel_velo - motors.get_avg_velocity();
-        printf("Flywheel error: %.2lf\n", error);
         double voltage = pid(kP, kI, kD, error, &integral, &prev_error);
 
         if (fabs(voltage) > 12000)
             voltage = copysign(12000, voltage);
+#ifdef DEBUG
+        printf("Flywheel error: %.2lf\n", error);
         printf("Flywheel voltage: %.2lf\n", voltage);
-
+#endif
         motors.move_voltage(voltage);
 
         pros::delay(2);
