@@ -18,9 +18,7 @@
 void opcontrol() {
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
-        drive.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
-                              E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE);
-        pros::delay(200);
+        pros::delay(2);
     }
     // flywheel.end_pid_task();
 }
