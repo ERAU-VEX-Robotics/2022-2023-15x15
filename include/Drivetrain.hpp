@@ -115,6 +115,21 @@ class Drivetrain {
     void tank_driver(pros::controller_id_e_t controller);
 
     /**
+     * Function: tank_driver_poly
+     *
+     * A driver control function in which each side of the drivetrain
+     * is controlled its respective joystick Y axis (i.e. the left
+     * joystick Y axis reading controls the left motors). This differs from
+     * tank_driver in that the input value is taken to the power input (and then
+     * readjusting them to the range of pros::motor::move: -127 to 127),
+     * creating a curve out of the input values
+     *
+     * @param controller The Controller ID whose joystick to read the value
+     * of
+     */
+    void tank_driver_poly(pros::controller_id_e_t controller, double pow);
+
+    /**
      * Function: arcade_driver
      *
      * A driver control function in one joystick controls

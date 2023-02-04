@@ -1,3 +1,4 @@
+#include "Motor_Group.hpp"
 #include "main.h"
 #include "pros/misc.h"
 
@@ -16,8 +17,10 @@
  */
 void opcontrol() {
     while (true) {
-        drive.tank_driver(pros::E_CONTROLLER_MASTER);
-        pros::delay(2);
+        drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
+        drive.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
+                              E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE);
+        pros::delay(200);
     }
     // flywheel.end_pid_task();
 }

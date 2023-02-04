@@ -2,6 +2,7 @@
 #include "pros/adi.h"
 #include "pros/rtos.hpp"
 #include "utils.h"
+#include <cmath>
 
 Drivetrain::Drivetrain(std::initializer_list<int> left_ports,
                        std::initializer_list<int> right_ports,
@@ -179,6 +180,18 @@ void Drivetrain::tank_driver(pros::controller_id_e_t controller) {
         controller, pros::E_CONTROLLER_ANALOG_LEFT_Y));
     right_motors.move(pros::c::controller_get_analog(
         controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y));
+}
+
+void Drivetrain::tank_driver_poly(pros::controller_id_e_t controller,
+                                  double pow) {
+    int left = pros::c::controller_get_analog(controller,
+                                              pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int right = pros::c::controller_get_analog(
+        controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    // We subtract 1 from pow since we multiply by the initial value - thus
+    // restoring the original range
+    left_motors.move(left * std::pow((std::abs(left) / 127.0), pow - 1));
+    right_motors.move(right * std::pow((std::abs(right) / 127.0), pow - 1));
 }
 
 void Drivetrain::arcade_driver(pros::controller_id_e_t controller) {
