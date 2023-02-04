@@ -30,6 +30,9 @@ void opcontrol() {
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
 
+        roller.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP,
+                      pros::E_CONTROLLER_DIGITAL_DOWN);
+
         pros::delay(2);
 
         if (pros::c::controller_get_digital_new_press(
