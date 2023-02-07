@@ -1,5 +1,6 @@
 #include "Drivetrain.hpp"
 #include "pros/adi.h"
+#include "pros/misc.h"
 #include "pros/rtos.hpp"
 #include "utils.h"
 #include <cmath>
@@ -19,6 +20,35 @@ void Drivetrain::trampoline(void *param) {
         Drivetrain *that = static_cast<Drivetrain *>(param);
         that->pid_task_fn();
     }
+}
+
+double Drivetrain::convert_inches_to_degrees(double inches) {
+    /**
+     * Formula Explanation:
+     * We treat inches as an arc length, so we divide it by the tracking wheel
+     * radius (since the tracking wheels are the ones from which all
+     * measurements are gathered). This is based off of the arc length equation,
+     * s = r * theta. In this case, we want theta, the central angle, or the
+     * angle that the tracking wheel needs to rotate.
+     *
+     * Next, we use 180 / pi to convert from radians to degrees, since both the
+     * internal motor encoders and ADI encoders return values in degrees.
+     *
+     * Finally, to account for any gear ratio between the encoder and the
+     * tracking wheel (this typically only arises when using the internal motor
+     * encoders), we multiply by the gear ratio, defined as (wheel connected to
+     * encoder / wheel connected to the wheel). If the ratio is greater than 1,
+     * then the gear on the encoder has more teeth than that of the wheel. So,
+     * the rotation of the wheel is undercounted. Thus, multiplying by the gear
+     * ratio accounts for this undermeasuring.
+     */
+    return inches / tracking_wheel_radius * 180 / M_PI *
+           tracking_wheel_gear_ratio;
+}
+
+double Drivetrain::arc_len(double angle, double radius) {
+    // The arc length formula, including converting the angle from degrees
+    return radius * angle * M_PI / 180;
 }
 
 void Drivetrain::add_adi_encoders(char left_encdr_top_port,
@@ -77,19 +107,20 @@ void Drivetrain::pid_task_fn() {
             left_voltage = copysign(12000, left_voltage);
         if (abs(right_voltage) > 12000)
             right_voltage = copysign(12000, right_voltage);
+        left_motors.move_voltage(left_voltage);
+        right_motors.move_voltage(right_voltage);
+
 #ifdef D_DEBUG
         printf("Left Error: %.2lf\nRight Error: %.2lf\n", left_error,
                right_error);
         print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
                         E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
                             E_MOTOR_GROUP_TELEM_PRINT_POSITION);
+        pros::delay(200);
 
-#endif
-
-        left_motors.move_voltage(left_voltage);
-        right_motors.move_voltage(right_voltage);
-
+#else
         pros::delay(2);
+#endif
     }
 }
 
@@ -109,8 +140,7 @@ void Drivetrain::set_pid_turn_consts(double Pconst, double Iconst,
 
 void Drivetrain::move_straight(double inches) {
     // Convert inches to degrees for the wheels to rotate
-    double temp =
-        inches / tracking_wheel_radius * 180 / M_PI * tracking_wheel_gear_ratio;
+    double temp = convert_inches_to_degrees(inches);
 
     left_targ = temp;
     right_targ = temp;
@@ -135,9 +165,7 @@ void Drivetrain::turn_angle(double angle) {
     // Convert the angle to turn into degrees for the wheels to rotate
     // This consists of 2 parts. First, we turn the angle into the number of
     // inches each side needs to move. Then, we turn that into degrees
-    double temp = (angle * (M_PI / 180) * track_radius) /
-                  tracking_wheel_radius * 180 / M_PI *
-                  tracking_wheel_gear_ratio;
+    double temp = convert_inches_to_degrees(arc_len(angle, track_distance));
 
     printf("Target: %.2lf\n", temp);
 
@@ -170,24 +198,50 @@ void Drivetrain::set_settled_threshold(double threshold) {
 
 void Drivetrain::set_drivetrain_dimensions(double tw, double twr,
                                            double gear_ratio) {
-    track_radius = tw / 2;
+    track_distance = tw / 2;
     tracking_wheel_radius = twr;
     tracking_wheel_gear_ratio = gear_ratio;
 }
 
-void Drivetrain::tank_driver(pros::controller_id_e_t controller) {
-    left_motors.move(pros::c::controller_get_analog(
-        controller, pros::E_CONTROLLER_ANALOG_LEFT_Y));
-    right_motors.move(pros::c::controller_get_analog(
-        controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y));
+void Drivetrain::tank_driver(pros::controller_id_e_t controller,
+                             pros::controller_digital_e_t rev_en_btn,
+                             pros::controller_digital_e_t rev_dis_btn) {
+
+    if (pros::c::controller_get_digital_new_press(controller, rev_en_btn))
+        rev_control = true;
+    else if (pros::c::controller_get_digital_new_press(controller, rev_dis_btn))
+        rev_control = false;
+
+    if (rev_control) {
+        right_motors.move(-pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_LEFT_Y));
+        left_motors.move(-pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y));
+    } else {
+        left_motors.move(pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_LEFT_Y));
+        right_motors.move(pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y));
+    }
 }
 
 void Drivetrain::tank_driver_poly(pros::controller_id_e_t controller,
-                                  double pow) {
-    int left = pros::c::controller_get_analog(controller,
+                                  double pow,
+                                  pros::controller_digital_e_t rev_en_btn,
+                                  pros::controller_digital_e_t rev_dis_btn) {
+    int left, right;
+
+    if (rev_control) {
+        right = -pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        left = -pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    } else {
+        left = pros::c::controller_get_analog(controller,
                                               pros::E_CONTROLLER_ANALOG_LEFT_Y);
-    int right = pros::c::controller_get_analog(
-        controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+        right = pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    }
     // We subtract 1 from pow since we multiply by the initial value - thus
     // restoring the original range
     left_motors.move(left * std::pow((std::abs(left) / 127.0), pow - 1));

@@ -30,7 +30,7 @@ class Drivetrain {
     double settled_threshold = 10;
 
     // Variables tracking important information about the drivetrain
-    double track_radius, tracking_wheel_radius, tracking_wheel_gear_ratio;
+    double track_distance, tracking_wheel_radius, tracking_wheel_gear_ratio;
 
     // Atomic variables storing the PID controllers targets
     std::atomic<double> left_targ, right_targ = 0;
@@ -54,6 +54,9 @@ class Drivetrain {
     // Boolean tracking whether the drivetrain includes encoders
     bool using_encdrs = false;
 
+    // Boolean tracking whether the tank control is set to reversed
+    bool rev_control = false;
+
     /**
      * The PID task function. This function contains a loop that executes the
      * code for PID controllers for each motor group of the drivetrain
@@ -68,6 +71,23 @@ class Drivetrain {
      * https://www.vexforum.com/t/pros-task-on-member-functions/105000/9
      */
     static void trampoline(void *param);
+
+    /**
+     * A function used to handle the conversion from inches for the drivetrain
+     * to travel to degrees for the wheels to rotate.
+     * \param inches The inches to travel
+     * \return The degrees to rotate
+     */
+    inline double convert_inches_to_degrees(double inches);
+
+    /**
+     * A function used to calculate arc length, used for turning functions
+     * \param radius The radius from the center of rotation to the tracking
+     * wheel used - typically just the tracking wheel radius
+     * \param angle The angle for the arc, in degrees
+     * \returns the arc length
+     */
+    inline double arc_len(double angle, double radius);
 
   public:
     /**
@@ -112,7 +132,9 @@ class Drivetrain {
      * @param controller The Controller ID whose joystick to read the value
      * of
      */
-    void tank_driver(pros::controller_id_e_t controller);
+    void tank_driver(pros::controller_id_e_t controller,
+                     pros::controller_digital_e_t rev_en_btn,
+                     pros::controller_digital_e_t rev_dis_btn);
 
     /**
      * Function: tank_driver_poly
@@ -127,7 +149,9 @@ class Drivetrain {
      * @param controller The Controller ID whose joystick to read the value
      * of
      */
-    void tank_driver_poly(pros::controller_id_e_t controller, double pow);
+    void tank_driver_poly(pros::controller_id_e_t controller, double pow,
+                          pros::controller_digital_e_t rev_en_btn,
+                          pros::controller_digital_e_t rev_dis_btn);
 
     /**
      * Function: arcade_driver
