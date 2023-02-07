@@ -154,21 +154,6 @@ class Drivetrain {
                           pros::controller_digital_e_t rev_dis_btn);
 
     /**
-     * Function: arcade_driver
-     *
-     * A driver control function in one joystick controls
-     * both forward/backward movement and turning.
-     *
-     * This implementation uses the left joystick
-     *
-     * The Y axis controls forward/backward
-     * The X axis controls turning
-     *
-     * @param controller The Controller ID whose joystick to read the value of
-     */
-    void arcade_driver(pros::controller_id_e_t controller);
-
-    /**
      * Functions to set the PID controller constants. Each controller uses the
      * same constants, based on the assumption that any possible difference in
      * the optimal PID constants for each motor group is negligible
