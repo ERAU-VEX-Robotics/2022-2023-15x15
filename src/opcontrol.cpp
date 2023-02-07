@@ -1,7 +1,4 @@
-#include "Motor_Group.hpp"
-#include "externs.hpp"
 #include "main.h"
-#include "pros/misc.h"
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -19,9 +16,12 @@
 void opcontrol() {
     flywheel.resume_pid_task();
     pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
+    bool endgame_primed = false;
 
     while (true) {
-        drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3);
+        drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3,
+                               pros::E_CONTROLLER_DIGITAL_RIGHT,
+                               pros::E_CONTROLLER_DIGITAL_LEFT);
         flywheel.driver(pros::E_CONTROLLER_MASTER,
                         pros::E_CONTROLLER_DIGITAL_L1,
                         pros::E_CONTROLLER_DIGITAL_L2);
@@ -36,7 +36,11 @@ void opcontrol() {
         pros::delay(2);
 
         if (pros::c::controller_get_digital_new_press(
-                pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP))
+                pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_X))
+            endgame_primed = true;
+        if (pros::c::controller_get_digital_new_press(
+                pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_Y) &&
+            endgame_primed)
             pros::c::adi_digital_write('e', true);
     }
     flywheel.end_pid_task();

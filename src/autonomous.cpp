@@ -1,4 +1,3 @@
-#include "Flywheel.hpp"
 #include "main.h"
 
 /**
@@ -13,8 +12,9 @@
  * from where it left off.
  */
 void autonomous() {
-    flywheel.resume_pid_task();
     drive.init_pid_task();
+    /*
+    flywheel.resume_pid_task();
 
     // After scoring roller, move to opposite roller through the low goal
     drive.move_straight(100);
@@ -51,6 +51,16 @@ void autonomous() {
     drive.move_straight(16);
     drive.wait_until_settled();
 
-    drive.end_pid_task();
     flywheel.pause_pid_task();
+    */
+    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
+
+    drive.move_straight(12);
+    drive.wait_until_settled();
+
+    pros::c::adi_digital_write('e', true);
+
+    /**/
+
+    drive.end_pid_task();
 }

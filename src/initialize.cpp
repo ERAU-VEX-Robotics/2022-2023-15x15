@@ -1,6 +1,6 @@
 #include "main.h"
 Drivetrain drive({17, 18}, {15, 16}, {true, true}, {false, false});
-Intake intake({9}, {true});
+Intake intake({8}, {true});
 Flywheel flywheel({19}, {true});
 Conveyor conveyor({20}, {false});
 Roller roller({10}, {false}, 1);
@@ -11,12 +11,12 @@ Roller roller({10}, {false}, 1);
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-    drive.set_drivetrain_dimensions(14.5, 2, 1);
-    drive.set_pid_straight_consts(100, 0, 0);
-    drive.set_pid_turn_consts(100, 0, 0);
-    drive.add_adi_encoders('c', 'd', false, 'g', 'h', true);
+    drive.set_drivetrain_dimensions(14.5, 1.625, 1);
+    drive.set_pid_straight_consts(5, 1, 0);
+    drive.set_pid_turn_consts(3, 1, 0);
+    drive.add_adi_encoders('c', 'd', false, 'g', 'h', false);
 
-    flywheel.set_pid_consts(45, 5, 1);
+    flywheel.set_pid_consts(50, 8, 1);
     flywheel.init_pid_task();
     flywheel.pause_pid_task();
 }
