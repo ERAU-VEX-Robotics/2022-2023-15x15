@@ -180,8 +180,8 @@ class Drivetrain {
      * This function updates the values of the left and right PID targets to
      * make the robot turn by a given degree amount clockwise, from a bird's eye
      * view.
-     * @param inches  The number of degrees to turn clockwise. Negative values
-     *                indicate counterclockwise movement.
+     * @param angle The number of degrees to turn clockwise. Negative values
+     *              indicate counterclockwise movement.
      */
     void turn_angle(double angle);
 
