@@ -11,6 +11,9 @@ Roller roller({10}, {false}, 1);
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+    // GUI init
+    gui_init();
+
     drive.set_drivetrain_dimensions(14.5, 1.625, 1);
     drive.set_pid_straight_consts(5, 1, 0);
     drive.set_pid_turn_consts(3, 1, 0);
