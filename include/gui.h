@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* hi*/
+
 enum auton { none, skills_best, skills_real, match_best, match_real, test };
 
 extern enum auton auton_id;
