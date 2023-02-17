@@ -19,4 +19,6 @@ void Indexer::driver(pros::controller_id_e_t controller,
                      pros::controller_digital_e_t fire_btn) {
     if (pros::c::controller_get_digital(controller, fire_btn))
         motors.move(127);
+    else
+        motors.move(0);
 }
