@@ -13,8 +13,8 @@
 #include <atomic>
 #include <initializer_list>
 
-#define FLYWHEEL_FWD_TARG 100
-#define FLYWHEEL_REV_TARG -50
+#define FLYWHEEL_FWD_TARG 600
+#define FLYWHEEL_REV_TARG -300
 
 class Flywheel {
   private:
