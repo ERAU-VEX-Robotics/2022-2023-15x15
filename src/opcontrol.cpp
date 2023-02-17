@@ -25,8 +25,7 @@ void opcontrol() {
         flywheel.driver(pros::E_CONTROLLER_MASTER,
                         pros::E_CONTROLLER_DIGITAL_L1,
                         pros::E_CONTROLLER_DIGITAL_L2);
-        conveyor.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
-                        pros::E_CONTROLLER_DIGITAL_B);
+        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A);
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
 
