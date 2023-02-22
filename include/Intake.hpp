@@ -48,6 +48,8 @@ class Intake {
     void in();
     // Wraps the necessary code to run the motors to expel disks from the intake
     void out();
+    // Wraps the necessary code to stop the motors
+    void stop();
 
     // Rotates the intake a specific number of degrees. Used for the attached
     // roller rotation mechanism.

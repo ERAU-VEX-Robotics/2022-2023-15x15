@@ -20,12 +20,14 @@ void Intake::driver(pros::controller_id_e_t controller,
     else if (pros::c::controller_get_digital(controller, out_button))
         out();
     else
-        motors.move_velocity(0);
+        stop();
 }
 
 void Intake::in() { motors.move(127); }
 
 void Intake::out() { motors.move(-127); }
+
+void Intake::stop() { motors.move_velocity(0); }
 
 void Intake::turn_degree(double degrees) {
     motors.reset_positions();
