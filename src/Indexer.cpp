@@ -2,6 +2,8 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 
+#define INDEXER_VELO 75
+
 Indexer::Indexer(std::initializer_list<int> ports,
                  std::initializer_list<bool> revs)
     : motors(ports, revs) {
@@ -18,7 +20,7 @@ void Indexer::punch_disk() { motors.move_relative(degrees_to_rotate, 100); }
 void Indexer::driver(pros::controller_id_e_t controller,
                      pros::controller_digital_e_t fire_btn) {
     if (pros::c::controller_get_digital(controller, fire_btn))
-        motors.move(127);
+        motors.move_velocity(INDEXER_VELO);
     else
         motors.move(0);
 }
