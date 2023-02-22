@@ -18,7 +18,7 @@ Flywheel::Flywheel(std::initializer_list<int> ports,
      * which is 600 RPM. This value is important for the move_velocity function
      * used to run the motors, in case I need to use that function.
      */
-    motors.set_gearing(pros::E_MOTOR_GEAR_RED);
+    motors.set_gearing(pros::E_MOTOR_GEAR_BLUE);
     motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
