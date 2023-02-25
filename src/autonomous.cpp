@@ -1,4 +1,7 @@
+#include "Flywheel.hpp"
+#include "externs.hpp"
 #include "main.h"
+#include "pros/rtos.hpp"
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -19,6 +22,67 @@ void autonomous() {
     case test:
         break;
     case skills_best:
+        // Launch pre-loads into low goal
+        indexer.punch_disk();
+        pros::delay(250);
+        indexer.punch_disk();
+        pros::delay(250);
+        flywheel.pause_pid_task();
+
+        // Drive to roller
+        drive.move_straight(24);
+        drive.wait_until_settled();
+        drive.turn_angle(90);
+        drive.wait_until_settled();
+        drive.move_straight(2);
+        drive.wait_until_settled();
+
+        // Score roller
+        roller.clockwise(90);
+        pros::delay(1000);
+
+        // Turn to grab disks
+        drive.move_straight(-2);
+        drive.wait_until_settled();
+        drive.turn_angle(135);
+        drive.wait_until_settled();
+        intake.in();
+
+        // Grab 3 disks
+        drive.move_straight(68);
+        drive.wait_until_settled();
+        intake.stop();
+        flywheel.resume_pid_task();
+
+        // Shoot disks
+        drive.turn_angle(93);
+        drive.wait_until_settled();
+        indexer.punch_disk();
+        pros::delay(250);
+        indexer.punch_disk();
+        pros::delay(250);
+        indexer.punch_disk();
+        pros::delay(250);
+
+        // Go for the stack of 3 disks
+        intake.in();
+        drive.turn_angle(-93);
+        drive.wait_until_settled();
+        drive.move_straight(34);
+        drive.wait_until_settled();
+        pros::delay(2000);
+        intake.stop();
+
+        // Launch the three disks
+        drive.turn_angle(100);
+        drive.wait_until_settled();
+        indexer.punch_disk();
+        pros::delay(250);
+        indexer.punch_disk();
+        pros::delay(250);
+        indexer.punch_disk();
+        pros::delay(250);
+
         break;
     case skills_real:
         break;
