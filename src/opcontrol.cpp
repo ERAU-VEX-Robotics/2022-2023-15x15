@@ -15,7 +15,6 @@
  */
 void opcontrol() {
     flywheel.resume_pid_task();
-    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
     bool endgame_primed = false;
 
     while (true) {
@@ -28,9 +27,6 @@ void opcontrol() {
         indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A);
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
-
-        roller.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP,
-                      pros::E_CONTROLLER_DIGITAL_DOWN);
 
         pros::delay(2);
 

@@ -1,10 +1,9 @@
 #include "Indexer.hpp"
 #include "main.h"
-Drivetrain drive({17, 18}, {15, 16}, {true, true}, {false, false});
-Intake intake({8}, {true});
+Drivetrain drive({11, 12}, {13, 14}, {true, true}, {false, false});
+Intake intake({10}, {true});
 Flywheel flywheel({20}, {true});
-Indexer indexer({12}, {false});
-Roller roller({10}, {false}, 1);
+Indexer indexer({19}, {false});
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -20,11 +19,13 @@ void initialize() {
     drive.set_pid_turn_consts(3, 1, 0);
     drive.add_adi_encoders('c', 'd', false, 'g', 'h', false);
 
-    flywheel.set_pid_consts(50, 8, 1);
+    flywheel.set_pid_consts(20, 5, 0.1);
     flywheel.init_pid_task();
     flywheel.pause_pid_task();
 
     indexer.set_rotation(120);
+
+    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
 }
 
 /**

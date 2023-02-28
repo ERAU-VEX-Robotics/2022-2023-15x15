@@ -38,8 +38,9 @@ void autonomous() {
         drive.wait_until_settled();
 
         // Score roller
-        roller.clockwise(90);
+        intake.in();
         pros::delay(1000);
+        intake.stop();
 
         // Turn to grab disks
         drive.move_straight(-2);
