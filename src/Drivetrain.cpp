@@ -230,6 +230,11 @@ void Drivetrain::tank_driver_poly(pros::controller_id_e_t controller,
                                   pros::controller_digital_e_t rev_dis_btn) {
     int left, right;
 
+    if (pros::c::controller_get_digital_new_press(controller, rev_en_btn))
+        rev_control = true;
+    else if (pros::c::controller_get_digital_new_press(controller, rev_dis_btn))
+        rev_control = false;
+
     if (rev_control) {
         right = -pros::c::controller_get_analog(
             controller, pros::E_CONTROLLER_ANALOG_LEFT_Y);
