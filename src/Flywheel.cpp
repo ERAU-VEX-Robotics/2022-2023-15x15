@@ -37,7 +37,8 @@ void Flywheel::pid_task_fn() {
         printf("Flywheel error: %.2lf\n", error);
         printf("Flywheel set voltage: %.2lf\n", voltage);
         print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
-                        E_MOTOR_GROUP_TELEM_PRINT_CURRENT);
+                        E_MOTOR_GROUP_TELEM_PRINT_CURRENT |
+                        E_MOTOR_GROUP_TELEM_PRINT_TEMPERATURE);
 #endif
         motors.move_voltage(voltage);
 #ifdef F_DEBUG
