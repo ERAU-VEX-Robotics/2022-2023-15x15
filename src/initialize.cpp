@@ -1,6 +1,6 @@
 #include "Indexer.hpp"
 #include "main.h"
-Drivetrain drive({11, 12}, {13, 14}, {true, true}, {false, false});
+Drivetrain drive({11, 12}, {13, 15}, {true, true}, {false, false});
 Intake intake({10}, {true});
 Flywheel flywheel({20}, {true});
 Indexer indexer({19}, {false});
