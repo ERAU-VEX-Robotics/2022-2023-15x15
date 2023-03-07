@@ -19,9 +19,9 @@ void initialize() {
     drive.set_pid_turn_consts(3, 1, 0);
     drive.add_adi_encoders('c', 'd', false, 'g', 'h', false);
 
-    flywheel.set_pid_consts(30, 3, 0);
-    flywheel.init_pid_task();
-    flywheel.pause_pid_task();
+    flywheel.set_tbh_consts(0.0005, 9681);
+    flywheel.init_task();
+    flywheel.pause_task();
 
     indexer.set_rotation(120);
 
