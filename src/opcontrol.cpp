@@ -15,7 +15,7 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-    flywheel.resume_pid_task();
+    flywheel.resume_task();
     bool endgame_primed = false;
 
     while (true) {
@@ -39,5 +39,5 @@ void opcontrol() {
             endgame_primed)
             pros::c::adi_digital_write('e', true);
     }
-    flywheel.end_pid_task();
+    flywheel.end_task();
 }

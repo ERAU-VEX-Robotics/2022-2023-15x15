@@ -15,7 +15,7 @@
  * from where it left off.
  */
 void autonomous() {
-    flywheel.resume_pid_task();
+    flywheel.resume_task();
     drive.init_pid_task();
 
     switch (auton_id) {
@@ -27,7 +27,7 @@ void autonomous() {
         pros::delay(250);
         indexer.punch_disk();
         pros::delay(250);
-        flywheel.pause_pid_task();
+        flywheel.pause_task();
 
         // Drive to roller
         drive.move_straight(24);
@@ -53,7 +53,7 @@ void autonomous() {
         drive.move_straight(68);
         drive.wait_until_settled();
         intake.stop();
-        flywheel.resume_pid_task();
+        flywheel.resume_task();
 
         // Shoot disks
         drive.turn_angle(93);
@@ -98,5 +98,5 @@ void autonomous() {
     }
 
     drive.end_pid_task();
-    flywheel.pause_pid_task();
+    flywheel.pause_task();
 }
