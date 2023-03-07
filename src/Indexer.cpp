@@ -20,9 +20,12 @@ void Indexer::punch_disk() {
 }
 
 void Indexer::driver(pros::controller_id_e_t controller,
-                     pros::controller_digital_e_t fire_btn) {
+                     pros::controller_digital_e_t fire_btn,
+                     pros::controller_digital_e_t pullback_btn) {
     if (pros::c::controller_get_digital(controller, fire_btn))
         motors.move_velocity(INDEXER_VELO);
+    else if (pros::c::controller_get_digital(controller, pullback_btn))
+        motors.move_velocity(-INDEXER_VELO);
     else
         motors.move(0);
 }

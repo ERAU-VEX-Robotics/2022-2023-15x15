@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.h"
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -14,17 +15,17 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-    flywheel.resume_pid_task();
+    flywheel.resume_task();
     bool endgame_primed = false;
 
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3,
                                pros::E_CONTROLLER_DIGITAL_RIGHT,
                                pros::E_CONTROLLER_DIGITAL_LEFT);
-        flywheel.driver(pros::E_CONTROLLER_MASTER,
-                        pros::E_CONTROLLER_DIGITAL_L1,
-                        pros::E_CONTROLLER_DIGITAL_L2);
-        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A);
+        flywheel.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
+                        pros::E_CONTROLLER_DIGITAL_B);
+        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_L1,
+                       pros::E_CONTROLLER_DIGITAL_L2);
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
 
@@ -38,5 +39,5 @@ void opcontrol() {
             endgame_primed)
             pros::c::adi_digital_write('e', true);
     }
-    flywheel.end_pid_task();
+    flywheel.end_task();
 }

@@ -13,7 +13,7 @@
 #include <atomic>
 #include <initializer_list>
 
-#define FLYWHEEL_FWD_TARG 400
+#define FLYWHEEL_FWD_TARG 435
 #define FLYWHEEL_REV_TARG -300
 
 class Flywheel {
@@ -23,16 +23,16 @@ class Flywheel {
 
     std::atomic<int> flywheel_velo = FLYWHEEL_FWD_TARG;
 
-    double kP, kI, kD = 0;
+    double tbh_gain, tbh_estimate = 0;
 
     /**
      * The PID task function. This function contains a loop that executes the
      * code to run a PID controller for the flywheel in its own task
      */
-    void pid_task_fn();
+    void task_fn();
 
     // The PROS task type that contains the PID task for the flywheel
-    pros::task_t pid_task;
+    pros::task_t task;
 
     /**
      * A static function used to call pid_task_fn. The PROS task system requires
@@ -57,16 +57,16 @@ class Flywheel {
     Flywheel(std::initializer_list<int> ports,
              std::initializer_list<bool> reverses);
 
-    void set_pid_consts(double kP, double kI, double kD);
+    void set_tbh_consts(double gain, double estimate);
 
-    // Initializes pid_task, starting the Flywheel PID task
-    void init_pid_task();
-    // Pauses the Flywheel PID task
-    void pause_pid_task();
+    // Initializes _task, starting the Flywheel task
+    void init_task();
+    // Pauses the Flywheel task
+    void pause_task();
     // Resumes the Flywheel PID task, assuming it was previously paused
-    void resume_pid_task();
+    void resume_task();
     // Removes/deletes the Flywheel PID task
-    void end_pid_task();
+    void end_task();
 
     // Sets the flywheel's target velocity
     void set_target_velo(int velo);

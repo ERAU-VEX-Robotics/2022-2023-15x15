@@ -2,7 +2,6 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rtos.h"
-#include "utils.h"
 #include <cmath>
 #include <cstdio>
 
@@ -22,14 +21,20 @@ Flywheel::Flywheel(std::initializer_list<int> ports,
     motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
-void Flywheel::pid_task_fn() {
-    double integral = 0;
-    double prev_error = 0;
+void Flywheel::task_fn() {
     double error = 0;
+    double prev_error = 0;
+    double voltage = tbh_estimate;
+    double base_voltage = 2 * tbh_estimate - 12000;
 
     while (true) {
         error = flywheel_velo - motors.get_avg_velocity();
-        double voltage = pid(kP, kI, kD, error, &integral, &prev_error);
+        voltage += error * tbh_gain;
+
+        if (std::signbit(error) != std::signbit(prev_error))
+            voltage = 0.5 * (voltage + base_voltage);
+
+        base_voltage = voltage;
 
         if (fabs(voltage) > 12000)
             voltage = copysign(12000, voltage);
@@ -37,13 +42,17 @@ void Flywheel::pid_task_fn() {
         printf("Flywheel error: %.2lf\n", error);
         printf("Flywheel set voltage: %.2lf\n", voltage);
         print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
-                        E_MOTOR_GROUP_TELEM_PRINT_CURRENT);
+                        E_MOTOR_GROUP_TELEM_PRINT_CURRENT |
+                        E_MOTOR_GROUP_TELEM_PRINT_TEMPERATURE |
+                        E_MOTOR_GROUP_TELEM_PRINT_VELOCITY);
 #endif
         motors.move_voltage(voltage);
 #ifdef F_DEBUG
         pros::delay(200);
 #else
         pros::delay(2);
+
+        prev_error = error;
 #endif
     }
 }
@@ -51,34 +60,32 @@ void Flywheel::pid_task_fn() {
 void Flywheel::trampoline(void *param) {
     if (param) {
         Flywheel *that = static_cast<Flywheel *>(param);
-        that->pid_task_fn();
+        that->task_fn();
     }
 }
 
-void Flywheel::init_pid_task() {
-    pid_task =
-        pros::c::task_create(trampoline, this, TASK_PRIORITY_DEFAULT,
-                             TASK_STACK_DEPTH_DEFAULT, "Flywheel PID Task");
+void Flywheel::init_task() {
+    task = pros::c::task_create(trampoline, this, TASK_PRIORITY_DEFAULT,
+                                TASK_STACK_DEPTH_DEFAULT, "Flywheel PID Task");
 }
 
-void Flywheel::pause_pid_task() {
-    pros::c::task_suspend(pid_task);
+void Flywheel::pause_task() {
+    pros::c::task_suspend(task);
     stop();
 }
 
-void Flywheel::resume_pid_task() { pros::c::task_resume(pid_task); }
+void Flywheel::resume_task() { pros::c::task_resume(task); }
 
-void Flywheel::end_pid_task() {
-    pause_pid_task();
-    pros::c::task_delete(pid_task);
+void Flywheel::end_task() {
+    pause_task();
+    pros::c::task_delete(task);
 }
 
 void Flywheel::set_target_velo(int velo) { flywheel_velo = velo; }
 
-void Flywheel::set_pid_consts(double Pconst, double Iconst, double Dconst) {
-    kP = Pconst;
-    kI = Iconst;
-    kD = Dconst;
+void Flywheel::set_tbh_consts(double gain, double estimate) {
+    tbh_gain = gain;
+    tbh_estimate = estimate;
 }
 
 void Flywheel::driver(pros::controller_id_e_t controller,
@@ -89,9 +96,9 @@ void Flywheel::driver(pros::controller_id_e_t controller,
     if (pros::c::controller_get_digital_new_press(controller, pwr_button)) {
         running = !running; // Toggle flywheel status
         if (running)
-            resume_pid_task();
+            resume_task();
         else
-            pause_pid_task();
+            pause_task();
     }
 
     if (pros::c::controller_get_digital_new_press(controller, rev_button)) {
