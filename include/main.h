@@ -40,7 +40,6 @@
  * You should add more #includes here
  */
 #include "externs.hpp"
-#include "gui.h"
 // #include "okapi/api.hpp"
 // #include "pros/api_legacy.h"
 
