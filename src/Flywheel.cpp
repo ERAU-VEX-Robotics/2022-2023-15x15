@@ -51,9 +51,8 @@ void Flywheel::task_fn() {
         pros::delay(200);
 #else
         pros::delay(2);
-
-        prev_error = error;
 #endif
+        prev_error = error;
     }
 }
 
