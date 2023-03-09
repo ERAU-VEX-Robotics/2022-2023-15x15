@@ -90,9 +90,9 @@ void Flywheel::set_tbh_consts(double gain, double estimate) {
 
 void Flywheel::driver(pros::controller_id_e_t controller,
                       pros::controller_digital_e_t pwr_button,
-                      pros::controller_digital_e_t rev_button) {
+                      pros::controller_digital_e_t spd_button) {
     static bool running = false;
-    static bool reversed = false;
+    static bool slow = false;
     if (pros::c::controller_get_digital_new_press(controller, pwr_button)) {
         running = !running; // Toggle flywheel status
         if (running)
@@ -101,12 +101,12 @@ void Flywheel::driver(pros::controller_id_e_t controller,
             pause_task();
     }
 
-    if (pros::c::controller_get_digital_new_press(controller, rev_button)) {
-        reversed = !reversed; // Toggle flywheel status
-        if (reversed)
-            set_target_velo(-FLYWHEEL_REV_TARG);
+    if (pros::c::controller_get_digital_new_press(controller, spd_button)) {
+        slow = !slow; // Toggle flywheel status
+        if (slow)
+            set_target_velo(FLYWHEEL_SLOW_TARG);
         else
-            set_target_velo(FLYWHEEL_FWD_TARG);
+            set_target_velo(FLYWHEEL_INIT_TARG);
     }
 }
 

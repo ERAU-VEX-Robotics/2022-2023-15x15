@@ -13,15 +13,15 @@
 #include <atomic>
 #include <initializer_list>
 
-#define FLYWHEEL_FWD_TARG 435
-#define FLYWHEEL_REV_TARG -300
+#define FLYWHEEL_INIT_TARG 400
+#define FLYWHEEL_SLOW_TARG 200
 
 class Flywheel {
   private:
     // The motor group containing all of the motors on the flywheel
     Motor_Group motors;
 
-    std::atomic<int> flywheel_velo = FLYWHEEL_FWD_TARG;
+    std::atomic<int> flywheel_velo;
 
     double tbh_gain, tbh_estimate = 0;
 
