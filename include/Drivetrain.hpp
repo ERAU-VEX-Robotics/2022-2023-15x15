@@ -118,9 +118,10 @@ class Drivetrain {
      * This function initializes a pair of ADI (3 wire) shaft encoders for use
      * for the robot during the autonomous period. It also sets a flag to enable
      * use of the initialized encoders in the PID task*/
-    void add_adi_encoders(char left_encdr_top_port, char left_encdr_bot_port,
-                          bool left_encdr_rev, char right_encdr_top_port,
-                          char right_encdr_bot_port, bool right_encdr_rev);
+    void add_adi_encoders(uint8_t left_encdr_top_port,
+                          uint8_t left_encdr_bot_port, bool left_encdr_rev,
+                          uint8_t right_encdr_top_port,
+                          uint8_t right_encdr_bot_port, bool right_encdr_rev);
 
     /**
      * Function: tank_driver

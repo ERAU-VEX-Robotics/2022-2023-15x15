@@ -2,6 +2,7 @@
 #include "pros/adi.h"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
+#include "stdio.h"
 #include "utils.h"
 #include <cmath>
 
@@ -42,19 +43,20 @@ double Drivetrain::convert_inches_to_degrees(double inches) {
      * the rotation of the wheel is undercounted. Thus, multiplying by the gear
      * ratio accounts for this undermeasuring.
      */
-    return inches / tracking_wheel_radius * 180 / M_PI *
+    return inches / tracking_wheel_radius * 180 / 3.1415 *
            tracking_wheel_gear_ratio;
 }
 
 double Drivetrain::arc_len(double angle, double radius) {
     // The arc length formula, including converting the angle from degrees
-    return radius * angle * M_PI / 180;
+    return radius * angle * 3.1415 / 180;
 }
 
-void Drivetrain::add_adi_encoders(char left_encdr_top_port,
-                                  char left_encdr_bot_port, bool left_encdr_rev,
-                                  char right_encdr_top_port,
-                                  char right_encdr_bot_port,
+void Drivetrain::add_adi_encoders(uint8_t left_encdr_top_port,
+                                  uint8_t left_encdr_bot_port,
+                                  bool left_encdr_rev,
+                                  uint8_t right_encdr_top_port,
+                                  uint8_t right_encdr_bot_port,
                                   bool right_encdr_rev) {
     using_encdrs = true;
     left_encdr = pros::c::adi_encoder_init(left_encdr_top_port,
@@ -65,6 +67,7 @@ void Drivetrain::add_adi_encoders(char left_encdr_top_port,
 }
 
 void Drivetrain::pid_task_fn() {
+    printf("Entered PID task");
     double left_integral = 0;
     double left_prev_error = 0;
     double left_error = 0;
@@ -111,11 +114,13 @@ void Drivetrain::pid_task_fn() {
         right_motors.move_voltage(right_voltage);
 
 #ifdef D_DEBUG
-        printf("Left Error: %.2lf\nRight Error: %.2lf\n", left_error,
-               right_error);
-        print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
-                        E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
-                            E_MOTOR_GROUP_TELEM_PRINT_POSITION);
+        printf("Left Error: %.2lf\nRight Error: %.2lf\nLeft Voltage: "
+               "%.2lf\nRight Voltage: %.2lf\n",
+               left_error, right_error, left_voltage, right_voltage);
+        left_motors.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
+                                    E_MOTOR_GROUP_TELEM_PRINT_POSITION);
+        right_motors.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
+                                     E_MOTOR_GROUP_TELEM_PRINT_POSITION);
         pros::delay(200);
 
 #else
