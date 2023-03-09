@@ -94,6 +94,10 @@ void autonomous() {
     case none:
         break;
     default:
+        drive.move_straight(24);
+        drive.wait_until_settled();
+        drive.turn_angle(90);
+        drive.wait_until_settled();
         break;
     }
 
