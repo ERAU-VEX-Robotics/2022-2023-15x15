@@ -13,8 +13,13 @@
 #include <atomic>
 #include <initializer_list>
 
-#define FLYWHEEL_INIT_TARG 400
-#define FLYWHEEL_SLOW_TARG 200
+#define FLYWHEEL_FAST_TARG 400
+#define FLYWHEEL_SLOW_TARG 350
+
+#define FLYWHEEL_TBH_GAIN 0.0005
+
+#define FLYWHEEL_FAST_ESTIMATE 9681
+#define FLYWHEEL_SLOW_ESTIMATE 8000
 
 class Flywheel {
   private:
@@ -24,6 +29,8 @@ class Flywheel {
     std::atomic<int> flywheel_velo;
 
     double tbh_gain, tbh_estimate = 0;
+
+    bool update_tbh_consts = false;
 
     /**
      * The PID task function. This function contains a loop that executes the
@@ -58,6 +65,9 @@ class Flywheel {
              std::initializer_list<bool> reverses);
 
     void set_tbh_consts(double gain, double estimate);
+
+    void set_speed_slow();
+    void set_speed_fast();
 
     // Initializes _task, starting the Flywheel task
     void init_task();

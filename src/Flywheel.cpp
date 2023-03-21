@@ -1,7 +1,4 @@
 #include "Flywheel.hpp"
-#include "pros/misc.h"
-#include "pros/motors.h"
-#include "pros/rtos.h"
 #include <cmath>
 #include <cstdio>
 
@@ -28,6 +25,11 @@ void Flywheel::task_fn() {
     double base_voltage = 2 * tbh_estimate - 12000;
 
     while (true) {
+        if (update_tbh_consts) {
+            voltage = tbh_estimate;
+            base_voltage = 2 * tbh_estimate - 12000;
+        }
+
         error = flywheel_velo - motors.get_avg_velocity();
         voltage += error * tbh_gain;
 
@@ -85,6 +87,17 @@ void Flywheel::set_target_velo(int velo) { flywheel_velo = velo; }
 void Flywheel::set_tbh_consts(double gain, double estimate) {
     tbh_gain = gain;
     tbh_estimate = estimate;
+    update_tbh_consts = true;
+}
+
+void Flywheel::set_speed_fast() {
+    set_target_velo(FLYWHEEL_FAST_TARG);
+    set_tbh_consts(FLYWHEEL_TBH_GAIN, FLYWHEEL_FAST_ESTIMATE);
+}
+
+void Flywheel::set_speed_slow() {
+    set_target_velo(FLYWHEEL_SLOW_TARG);
+    set_tbh_consts(FLYWHEEL_TBH_GAIN, FLYWHEEL_SLOW_ESTIMATE);
 }
 
 void Flywheel::driver(pros::controller_id_e_t controller,
@@ -102,10 +115,11 @@ void Flywheel::driver(pros::controller_id_e_t controller,
 
     if (pros::c::controller_get_digital_new_press(controller, spd_button)) {
         slow = !slow; // Toggle flywheel status
-        if (slow)
-            set_target_velo(FLYWHEEL_SLOW_TARG);
-        else
-            set_target_velo(FLYWHEEL_INIT_TARG);
+        if (slow) {
+            set_speed_slow();
+        } else {
+            set_speed_fast();
+        }
     }
 }
 
