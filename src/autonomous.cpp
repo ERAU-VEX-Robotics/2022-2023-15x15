@@ -1,7 +1,6 @@
 #include "Flywheel.hpp"
 #include "externs.hpp"
 #include "main.h"
-#include "pros/rtos.hpp"
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -17,6 +16,7 @@
 void autonomous() {
     flywheel.resume_task();
     drive.init_pid_task();
+    drive.move_straight(0);
 
     switch (auton_id) {
     case test:
@@ -38,9 +38,9 @@ void autonomous() {
         drive.wait_until_settled();
 
         // Score roller
-        intake.in();
+        roller.clockwise(90);
         pros::delay(1000);
-        intake.stop();
+        roller.stop();
 
         // Turn to grab disks
         drive.move_straight(-2);
@@ -94,10 +94,6 @@ void autonomous() {
     case none:
         break;
     default:
-        drive.move_straight(24);
-        drive.wait_until_settled();
-        drive.turn_angle(90);
-        drive.wait_until_settled();
         break;
     }
 
