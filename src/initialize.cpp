@@ -2,8 +2,9 @@
 #include "main.h"
 Drivetrain drive({11, 12}, {13, 16}, {true, true}, {false, false});
 Intake intake({9}, {false});
-Flywheel flywheel({20}, {true});
+Flywheel flywheel({18}, {true});
 Indexer indexer({19}, {false});
+Roller roller({5}, {true}, 1);
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -14,18 +15,17 @@ void initialize() {
     // GUI init
     gui_init();
 
-    drive.set_drivetrain_dimensions(14.5, 1.625, 1);
-    drive.set_pid_straight_consts(5, 1, 0);
-    drive.set_pid_turn_consts(3, 1, 0);
-    drive.add_adi_encoders('c', 'd', false, 'g', 'h', false);
+    drive.set_drivetrain_dimensions(12.5, 1.625, 1);
+    drive.set_pid_straight_consts(105, 0.1, 0);
+    drive.set_pid_turn_consts(50, 0.1, 0);
+    // drive.add_adi_encoders('e', 'f', false, 'g', 'h', false);
+    drive.set_settled_threshold(10);
 
-    flywheel.set_tbh_consts(0.0005, 9681);
+    flywheel.set_speed_slow();
     flywheel.init_task();
     flywheel.pause_task();
 
-    indexer.set_rotation(120);
-
-    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
+    pros::c::adi_port_set_config('d', pros::E_ADI_DIGITAL_OUT);
 }
 
 /**
