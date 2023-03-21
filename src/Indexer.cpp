@@ -16,7 +16,10 @@ void Indexer::set_rotation(int degrees_to_rotate) {
 }
 
 void Indexer::punch_disk() {
-    motors.move_relative(degrees_to_rotate, INDEXER_VELO);
+    motors.move_velocity(INDEXER_VELO);
+    pros::delay(4000);
+    motors.move(0);
+    pros::delay(1000);
 }
 
 void Indexer::driver(pros::controller_id_e_t controller,
