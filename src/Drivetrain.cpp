@@ -11,7 +11,11 @@ Drivetrain::Drivetrain(std::initializer_list<int> leftPorts,
                        std::initializer_list<bool> leftRevs,
                        std::initializer_list<bool> rightRevs,
                        pros::motor_gearset_e_t gearset, double wD, double bW,
-                       double Pconst, double Iconst, double Dconst) {
+                       double Pconst, double Iconst, double Dconst)
+    : left_motors(leftPorts, leftRevs), right_motors(rightPorts, rightRevs) {
+
+    left_motors.set_gearing(gearset);
+    right_motors.set_gearing(gearset);
 
     wheel_diameter = wD;
     base_width = bW;
