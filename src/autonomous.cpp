@@ -20,6 +20,10 @@ void autonomous() {
 
     switch (auton_id) {
     case test:
+        drive.move_straight(24);
+        drive.wait_until_settled();
+        drive.turn_angle(90);
+        drive.wait_until_settled();
         break;
     case skills_best:
         // Launch pre-loads into low goal
