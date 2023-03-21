@@ -38,19 +38,19 @@ const char *auton_display_map[] = {"Skills - Best",
                                    ""};
 
 lv_res_t auton_select_action(lv_obj_t *btnm, const char *text) {
-    if (strcmp(text, auton_display_map[0])) {
+    if (!strcmp(text, auton_display_map[0])) {
         auton_id = skills_best;
         lv_label_set_text(lbl, text);
-    } else if (strcmp(text, auton_display_map[1])) {
+    } else if (!strcmp(text, auton_display_map[1])) {
         auton_id = skills_real;
         lv_label_set_text(lbl, text);
-    } else if (strcmp(text, auton_display_map[3])) {
+    } else if (!strcmp(text, auton_display_map[3])) {
         auton_id = match_best;
         lv_label_set_text(lbl, text);
-    } else if (strcmp(text, auton_display_map[4])) {
+    } else if (!strcmp(text, auton_display_map[4])) {
         auton_id = match_real;
         lv_label_set_text(lbl, text);
-    } else if (strcmp(text, auton_display_map[6])) {
+    } else if (!strcmp(text, auton_display_map[6])) {
         auton_id = test;
         lv_label_set_text(lbl, text);
     } else {
