@@ -57,6 +57,8 @@ class Drivetrain {
     // Boolean tracking whether the tank control is set to reversed
     bool rev_control = false;
 
+    bool reset_integral = false;
+
     /**
      * The PID task function. This function contains a loop that executes the
      * code for PID controllers for each motor group of the drivetrain
@@ -199,6 +201,8 @@ class Drivetrain {
     // Sets the threshold for declaring whether the drivetrain has settled, i.e.
     // has reached its target position.
     void set_settled_threshold(double threshold);
+
+    void set_velo(int left_velo, int right_velo);
 
     /**
      * Function: set_drivetrain_dimensions

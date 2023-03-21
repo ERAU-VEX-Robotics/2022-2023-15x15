@@ -67,7 +67,6 @@ void Drivetrain::add_adi_encoders(uint8_t left_encdr_top_port,
 }
 
 void Drivetrain::pid_task_fn() {
-    printf("Entered PID task");
     double left_integral = 0;
     double left_prev_error = 0;
     double left_error = 0;
@@ -76,7 +75,14 @@ void Drivetrain::pid_task_fn() {
     double right_prev_error = 0;
     double right_error = 0;
 
+    int count = 0;
+
     while (true) {
+        if (reset_integral) {
+            right_integral = 0;
+            left_integral = 0;
+            reset_integral = false;
+        }
         if (using_encdrs) {
             left_error = left_targ - pros::c::adi_encoder_get(left_encdr);
             right_error = right_targ - pros::c::adi_encoder_get(right_encdr);
@@ -86,9 +92,10 @@ void Drivetrain::pid_task_fn() {
         }
 
         if (fabs(left_error) < settled_threshold &&
-            fabs(right_error) < settled_threshold)
+            fabs(right_error) < settled_threshold) {
             is_settled = true;
-        else
+            reset_integral = true;
+        } else
             is_settled = false;
 
         int left_voltage, right_voltage;
@@ -113,19 +120,20 @@ void Drivetrain::pid_task_fn() {
         left_motors.move_voltage(left_voltage);
         right_motors.move_voltage(right_voltage);
 
-#ifdef D_DEBUG
-        printf("Left Error: %.2lf\nRight Error: %.2lf\nLeft Voltage: "
-               "%.2lf\nRight Voltage: %.2lf\n",
-               left_error, right_error, left_voltage, right_voltage);
-        left_motors.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
-                                    E_MOTOR_GROUP_TELEM_PRINT_POSITION);
-        right_motors.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
-                                     E_MOTOR_GROUP_TELEM_PRINT_POSITION);
-        pros::delay(200);
+        if (left_error == left_prev_error && right_error == right_prev_error) {
+            ++count;
+        } else
+            count = 0;
+        if (count > 5) {
+            is_settled = true;
+        }
 
-#else
-        pros::delay(2);
+#ifdef D_DEBUG
+        printf("Left Error: %.2lf\nRight Error: %.2lf\nSettled: %d\n",
+               left_error, right_error, is_settled.load());
+
 #endif
+        pros::delay(20);
     }
 }
 
@@ -144,6 +152,7 @@ void Drivetrain::set_pid_turn_consts(double Pconst, double Iconst,
 }
 
 void Drivetrain::move_straight(double inches) {
+    reset_integral = true;
     // Reset the encoder positions
     if (using_encdrs) {
         pros::c::adi_encoder_reset(left_encdr);
@@ -159,9 +168,13 @@ void Drivetrain::move_straight(double inches) {
     // Update targets
     left_targ = temp;
     right_targ = temp;
+
+    is_settled = false;
 }
 
 void Drivetrain::turn_angle(double angle) {
+    reset_integral = true;
+
     // Reset the encoder positions
     if (using_encdrs) {
         pros::c::adi_encoder_reset(left_encdr);
@@ -176,14 +189,21 @@ void Drivetrain::turn_angle(double angle) {
     double temp = convert_inches_to_degrees(arc_len(angle, track_distance));
 
     // Update targets
-    left_targ = temp;
-    right_targ = -temp;
+    left_targ = -temp;
+    right_targ = temp;
+
+    is_settled = false;
 }
 
 void Drivetrain::init_pid_task() {
     pid_task =
         pros::c::task_create(trampoline, this, TASK_PRIORITY_DEFAULT,
                              TASK_STACK_DEPTH_DEFAULT, "Drivetrain PID Task");
+}
+
+void Drivetrain::set_velo(int left_velo, int right_velo) {
+    left_motors.move_velocity(left_velo);
+    right_motors.move_velocity(right_velo);
 }
 
 void Drivetrain::end_pid_task() {
@@ -193,8 +213,12 @@ void Drivetrain::end_pid_task() {
 }
 
 void Drivetrain::wait_until_settled() {
-    while (!is_settled)
-        pros::delay(20);
+    pros::delay(200);
+    while (!is_settled) {
+        printf("not settled\n");
+        pros::delay(2);
+    }
+    printf("settled\n");
 }
 void Drivetrain::set_settled_threshold(double threshold) {
     settled_threshold = threshold;
