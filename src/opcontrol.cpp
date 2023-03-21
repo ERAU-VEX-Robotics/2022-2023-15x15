@@ -28,8 +28,8 @@ void opcontrol() {
                        pros::E_CONTROLLER_DIGITAL_L2);
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
-
-        pros::delay(2);
+        roller.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP,
+                      pros::E_CONTROLLER_DIGITAL_DOWN);
 
         if (pros::c::controller_get_digital_new_press(
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_X))
@@ -37,7 +37,9 @@ void opcontrol() {
         if (pros::c::controller_get_digital_new_press(
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_Y) &&
             endgame_primed)
-            pros::c::adi_digital_write('e', true);
+            pros::c::adi_digital_write('d', true);
+
+        pros::delay(2);
     }
     flywheel.end_task();
 }
