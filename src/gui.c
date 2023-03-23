@@ -8,7 +8,11 @@ lv_obj_t *btn_main_to_auton;
 lv_obj_t *btn_auton_to_main;
 lv_obj_t *btnm_auton_select;
 lv_obj_t *lbl;
+lv_obj_t *bg_main;
+lv_obj_t *bg_auton;
+
 lv_style_t main_style;
+lv_style_t pg_style;
 lv_style_t btn_style;
 lv_style_t btn_pr_style;
 lv_style_t btnm_btn_style;
@@ -16,14 +20,17 @@ lv_style_t btnm_btn_pr_style;
 
 enum auton auton_id = none;
 
+LV_IMG_DECLARE(eagle_screech_brain_screen)
+LV_IMG_DECLARE(eagle_screech_brain_screen_dark)
+
 lv_res_t show_auton_pg(lv_obj_t *btn) {
-    lv_obj_set_hidden(pg_main, true);
-    lv_obj_set_hidden(pg_auton, false);
+    lv_obj_set_hidden(bg_main, true);
+    lv_obj_set_hidden(bg_auton, false);
     return LV_RES_OK;
 }
 lv_res_t show_main_pg(lv_obj_t *btn) {
-    lv_obj_set_hidden(pg_main, false);
-    lv_obj_set_hidden(pg_auton, true);
+    lv_obj_set_hidden(bg_main, false);
+    lv_obj_set_hidden(bg_auton, true);
     return LV_RES_OK;
 }
 
@@ -68,14 +75,23 @@ void gui_init() {
     main_style.body.grad_color = main_style.body.main_color;
     main_style.text.color = LV_COLOR_HEX(0xdfdfdf);
 
+    lv_style_copy(&pg_style, &main_style);
+
+    pg_style.body.main_color = LV_COLOR_HEX(0x041a31);
+    pg_style.body.grad_color = main_style.body.main_color;
+    pg_style.body.opa = 0;
+    pg_style.text.color = LV_COLOR_HEX(0xdfdfdf);
+
     lv_style_copy(&btn_style, &main_style);
 
     btn_style.body.border.color = LV_COLOR_HEX(0xf8c649);
     btn_style.body.border.width = 2;
+    btn_style.body.opa = 80;
     btn_style.body.radius = 40;
 
     lv_style_copy(&btn_pr_style, &btn_style);
     btn_pr_style.body.main_color = LV_COLOR_HEX(0x02101f);
+    btn_pr_style.body.opa = 140;
 
     lv_style_copy(&btnm_btn_style, &btn_style);
     btnm_btn_style.body.border.width = 0;
@@ -85,17 +101,30 @@ void gui_init() {
     btnm_btn_pr_style.body.border.width = 0;
     btnm_btn_pr_style.body.padding.inner = 5;
 
-    pg_main = lv_page_create(lv_scr_act(), NULL);
+    // Generate backgrounds for each menu - these are the parent objects for
+    // each menu
+    bg_main = lv_img_create(lv_scr_act(), NULL);
+    lv_img_set_src(bg_main, &eagle_screech_brain_screen);
+    lv_obj_align(bg_main, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    bg_auton = lv_img_create(lv_scr_act(), NULL);
+    lv_img_set_src(bg_auton, &eagle_screech_brain_screen_dark);
+    lv_obj_align(bg_auton, NULL, LV_ALIGN_CENTER, 0, 0);
+
+    // Each page acts as the parent for all interactable elements, but it is a
+    // child to the background so that the image is behind everything else -
+    // also, the image doesn't scroll.
+    pg_main = lv_page_create(bg_main, NULL);
     lv_obj_set_size(pg_main, 480, 240);
     lv_obj_align(pg_main, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_page_set_style(pg_main, LV_PAGE_STYLE_BG, &main_style);
+    lv_page_set_style(pg_main, LV_PAGE_STYLE_BG, &pg_style);
 
-    pg_auton = lv_page_create(lv_scr_act(), NULL);
+    pg_auton = lv_page_create(bg_auton, NULL);
     lv_obj_set_size(pg_auton, 480, 240);
     lv_obj_align(pg_auton, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_page_set_style(pg_auton, LV_PAGE_STYLE_BG, &main_style);
+    lv_page_set_style(pg_auton, LV_PAGE_STYLE_BG, &pg_style);
 
-    lv_obj_set_hidden(pg_auton, true);
+    lv_obj_set_hidden(bg_auton, true);
 
     btn_main_to_auton = lv_btn_create(pg_main, NULL);
     lv_btn_set_action(btn_main_to_auton, LV_BTN_ACTION_CLICK, show_auton_pg);
