@@ -191,10 +191,8 @@ void Drivetrain::end_pid_task() {
 void Drivetrain::wait_until_settled() {
     pros::delay(200);
     while (!is_settled) {
-        printf("not settled\n");
         pros::delay(2);
     }
-    printf("settled\n");
 }
 void Drivetrain::set_settled_threshold(double threshold) {
     settled_threshold = threshold;
