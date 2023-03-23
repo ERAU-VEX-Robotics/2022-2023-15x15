@@ -16,9 +16,8 @@ void initialize() {
     gui_init();
 
     drive.set_drivetrain_dimensions(12.5, 1.625, 1);
-    drive.set_pid_straight_consts(105, 0.1, 0);
-    drive.set_pid_turn_consts(50, 0.1, 0);
-    // drive.add_adi_encoders('e', 'f', false, 'g', 'h', false);
+    drive.set_pid_straight_consts(40, 0.01, 0);
+    drive.set_pid_turn_consts(20, 0.01, 0);
     drive.set_settled_threshold(10);
 
     flywheel.set_speed_slow();
