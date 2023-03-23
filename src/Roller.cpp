@@ -4,6 +4,7 @@ Roller::Roller(std::initializer_list<int> ports,
                std::initializer_list<bool> revs, double gear_ratio)
     : motors(ports, revs), gear_ratio(gear_ratio) {
     motors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 }
 
 void Roller::clockwise() { motors.move(127); }
@@ -12,6 +13,7 @@ void Roller::stop() { motors.move(0); }
 
 void Roller::clockwise(double degrees) {
     motors.move_relative(degrees / gear_ratio, 200);
+    printf("rotation: %lf\n", degrees / gear_ratio);
 }
 
 void Roller::counterclockwise(double degrees) {
