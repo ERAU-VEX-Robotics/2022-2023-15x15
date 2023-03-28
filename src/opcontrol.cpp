@@ -20,8 +20,7 @@ void opcontrol() {
 
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3,
-                               pros::E_CONTROLLER_DIGITAL_RIGHT,
-                               pros::E_CONTROLLER_DIGITAL_LEFT);
+                               pros::E_CONTROLLER_DIGITAL_RIGHT);
         flywheel.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
                         pros::E_CONTROLLER_DIGITAL_B);
         indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_L1,
