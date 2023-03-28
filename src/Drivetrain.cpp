@@ -206,13 +206,10 @@ void Drivetrain::set_drivetrain_dimensions(double tw, double twr,
 }
 
 void Drivetrain::tank_driver(pros::controller_id_e_t controller,
-                             pros::controller_digital_e_t rev_en_btn,
-                             pros::controller_digital_e_t rev_dis_btn) {
+                             pros::controller_digital_e_t rev_btn) {
 
-    if (pros::c::controller_get_digital_new_press(controller, rev_en_btn))
-        rev_control = true;
-    else if (pros::c::controller_get_digital_new_press(controller, rev_dis_btn))
-        rev_control = false;
+    if (pros::c::controller_get_digital_new_press(controller, rev_btn))
+        rev_control = !rev_control;
 
     if (rev_control) {
         right_motors.move(-pros::c::controller_get_analog(
@@ -229,14 +226,12 @@ void Drivetrain::tank_driver(pros::controller_id_e_t controller,
 
 void Drivetrain::tank_driver_poly(pros::controller_id_e_t controller,
                                   double pow,
-                                  pros::controller_digital_e_t rev_en_btn,
-                                  pros::controller_digital_e_t rev_dis_btn) {
+                                  pros::controller_digital_e_t rev_btn) {
+
     int left, right;
 
-    if (pros::c::controller_get_digital_new_press(controller, rev_en_btn))
-        rev_control = true;
-    else if (pros::c::controller_get_digital_new_press(controller, rev_dis_btn))
-        rev_control = false;
+    if (pros::c::controller_get_digital_new_press(controller, rev_btn))
+        rev_control = !rev_control;
 
     if (rev_control) {
         right = -pros::c::controller_get_analog(

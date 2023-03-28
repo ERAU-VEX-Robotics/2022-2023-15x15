@@ -138,8 +138,7 @@ class Drivetrain {
      * of
      */
     void tank_driver(pros::controller_id_e_t controller,
-                     pros::controller_digital_e_t rev_en_btn,
-                     pros::controller_digital_e_t rev_dis_btn);
+                     pros::controller_digital_e_t rev_btn);
 
     /**
      * Function: tank_driver_poly
@@ -155,8 +154,7 @@ class Drivetrain {
      * of
      */
     void tank_driver_poly(pros::controller_id_e_t controller, double pow,
-                          pros::controller_digital_e_t rev_en_btn,
-                          pros::controller_digital_e_t rev_dis_btn);
+                          pros::controller_digital_e_t rev_btn);
 
     /**
      * Functions to set the PID controller constants. Each controller uses the
