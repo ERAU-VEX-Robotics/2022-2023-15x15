@@ -1,7 +1,7 @@
 #include "Indexer.hpp"
 #include "main.h"
 Drivetrain drive({11, 12}, {13, 16}, {true, true}, {false, false});
-Intake intake({9}, {false});
+Intake intake({7}, {false});
 Flywheel flywheel({18}, {true});
 Indexer indexer({19}, {false});
 Roller roller({5}, {true}, 1);
@@ -16,11 +16,11 @@ void initialize() {
     gui_init();
 
     drive.set_drivetrain_dimensions(12.5, 1.625, 1);
-    drive.set_pid_straight_consts(40, 0.01, 0);
-    drive.set_pid_turn_consts(20, 0.01, 0);
-    drive.set_settled_threshold(10);
+    drive.set_pid_straight_consts(45, 0.01, 0);
+    drive.set_pid_turn_consts(35, 0.01, 0);
+    drive.set_settled_threshold(5);
 
-    flywheel.set_speed_slow();
+    flywheel.set_speed_fast();
     flywheel.init_task();
     flywheel.pause_task();
 
