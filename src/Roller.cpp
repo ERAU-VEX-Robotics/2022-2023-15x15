@@ -12,12 +12,21 @@ void Roller::counterclockwise() { motors.move(-127); }
 void Roller::stop() { motors.move(0); }
 
 void Roller::clockwise(double degrees) {
-    motors.move_relative(degrees / gear_ratio, 200);
-    printf("rotation: %lf\n", degrees / gear_ratio);
+    motors.reset_positions();
+    double targ = degrees / gear_ratio;
+    motors.move_relative(targ, 200);
+    while (motors.get_avg_position() < (targ - 5))
+        pros::delay(2);
+    motors.brake();
 }
 
 void Roller::counterclockwise(double degrees) {
-    motors.move_relative(-degrees / gear_ratio, 200);
+    motors.reset_positions();
+    double targ = -degrees / gear_ratio;
+    motors.move_relative(targ, 200);
+    while (motors.get_avg_position() > (targ + 5))
+        pros::delay(2);
+    motors.brake();
 }
 
 void Roller::driver(pros::controller_id_e_t controller,
