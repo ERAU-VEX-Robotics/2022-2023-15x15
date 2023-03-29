@@ -49,7 +49,7 @@ double Drivetrain::convert_inches_to_degrees(double inches) {
 
 double Drivetrain::arc_len(double angle, double radius) {
     // The arc length formula, including converting the angle from degrees
-    return radius * angle * 3.1415 / 180;
+    return radius * angle * 3.1415 / 180.0;
 }
 
 void Drivetrain::add_adi_encoders(uint8_t left_encdr_top_port,
@@ -78,11 +78,6 @@ void Drivetrain::pid_task_fn() {
     int count = 0;
 
     while (true) {
-        if (reset_integral) {
-            right_integral = 0;
-            left_integral = 0;
-            reset_integral = false;
-        }
         if (using_encdrs) {
             left_error = left_targ - pros::c::adi_encoder_get(left_encdr);
             right_error = right_targ - pros::c::adi_encoder_get(right_encdr);
@@ -91,8 +86,19 @@ void Drivetrain::pid_task_fn() {
             right_error = right_targ - right_motors.get_avg_position();
         }
 
-        if (fabs(left_error) < settled_threshold &&
-            fabs(right_error) < settled_threshold) {
+        if (reset_pid_vars) {
+            left_integral = 0;
+            left_prev_error = 0;
+            left_error = 0;
+
+            right_integral = 0;
+            right_prev_error = 0;
+            right_error = 0;
+
+            is_settled = false;
+            reset_pid_vars = false;
+        } else if (fabs(left_error) < settled_threshold &&
+                   fabs(right_error) < settled_threshold) {
             is_settled = true;
         } else
             is_settled = false;
@@ -102,6 +108,10 @@ void Drivetrain::pid_task_fn() {
         if (is_settled) {
             left_voltage = 0;
             right_voltage = 0;
+            left_motors.brake();
+            right_motors.brake();
+
+            continue;
         } else if (use_turn_consts) {
             left_voltage = pid(kP_turn, kI_turn, kD_turn, left_error,
                                &left_integral, &left_prev_error);
@@ -126,8 +136,10 @@ void Drivetrain::pid_task_fn() {
             ++count;
         } else
             count = 0;
+
         if (count > 25) {
             is_settled = true;
+            count = 0;
         }
 
 #ifdef D_DEBUG
@@ -168,7 +180,7 @@ void Drivetrain::turn_angle(double angle) {
     double temp = convert_inches_to_degrees(arc_len(angle, track_distance));
     use_turn_consts = true;
 
-    reset_pid_state(-temp, temp);
+    reset_pid_state(temp, -temp);
 }
 
 void Drivetrain::init_pid_task() {
@@ -193,6 +205,7 @@ void Drivetrain::wait_until_settled() {
     while (!is_settled) {
         pros::delay(2);
     }
+    pros::delay(200);
 }
 void Drivetrain::set_settled_threshold(double threshold) {
     settled_threshold = threshold;
@@ -267,7 +280,7 @@ void Drivetrain::print_telemetry(uint8_t left_vals, uint8_t right_vals) {
 void Drivetrain::reset_pid_state(double new_left_targ, double new_right_targ) {
     pros::c::task_suspend(pid_task);
 
-    reset_integral = true;
+    reset_pid_vars = true;
 
     // Reset the encoder positions
     if (using_encdrs) {
@@ -281,8 +294,6 @@ void Drivetrain::reset_pid_state(double new_left_targ, double new_right_targ) {
     // Update targets
     left_targ = new_left_targ;
     right_targ = new_right_targ;
-
-    is_settled = false;
 
     pros::c::task_resume(pid_task);
 }

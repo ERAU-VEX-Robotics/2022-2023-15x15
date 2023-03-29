@@ -57,7 +57,7 @@ class Drivetrain {
     // Boolean tracking whether the tank control is set to reversed
     bool rev_control = false;
 
-    bool reset_integral = false;
+    bool reset_pid_vars = false;
 
     /**
      * The PID task function. This function contains a loop that executes the
