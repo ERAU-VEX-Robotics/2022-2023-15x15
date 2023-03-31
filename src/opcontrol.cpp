@@ -15,20 +15,32 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-    flywheel.resume_task();
+    // flywheel.resume_task();
     bool endgame_primed = false;
 
+    int voltage = 0;
+
     while (true) {
+
+        flywheel.set_voltage(voltage);
+        pros::delay(1000);
+
+        flywheel.print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
+                                 E_MOTOR_GROUP_TELEM_PRINT_VELOCITY);
+
+        voltage += 50;
+
+        /**
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3,
                                pros::E_CONTROLLER_DIGITAL_RIGHT);
-        flywheel.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
-                        pros::E_CONTROLLER_DIGITAL_B);
-        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_L1,
-                       pros::E_CONTROLLER_DIGITAL_L2);
-        intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
-                      pros::E_CONTROLLER_DIGITAL_R2);
-        roller.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP,
-                      pros::E_CONTROLLER_DIGITAL_DOWN);
+        flywheel.driver(pros::E_CONTROLLER_MASTER,
+        pros::E_CONTROLLER_DIGITAL_A, pros::E_CONTROLLER_DIGITAL_B);
+        indexer.driver(pros::E_CONTROLLER_MASTER,
+        pros::E_CONTROLLER_DIGITAL_L1, pros::E_CONTROLLER_DIGITAL_L2);
+        intake.driver(pros::E_CONTROLLER_MASTER,
+        pros::E_CONTROLLER_DIGITAL_R1, pros::E_CONTROLLER_DIGITAL_R2);
+        roller.driver(pros::E_CONTROLLER_MASTER,
+        pros::E_CONTROLLER_DIGITAL_UP, pros::E_CONTROLLER_DIGITAL_DOWN);
 
         if (pros::c::controller_get_digital_new_press(
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_X))
@@ -37,8 +49,7 @@ void opcontrol() {
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_Y) &&
             endgame_primed)
             pros::c::adi_digital_write('d', true);
-
-        pros::delay(2);
+*/
     }
     flywheel.end_task();
 }
