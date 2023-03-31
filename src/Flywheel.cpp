@@ -31,10 +31,10 @@ void Flywheel::task_fn() {
         int get_velo = velocity; // have to extract value of velocity, as
                                  // std::signbit doesn't accept atomic variables
 
-        double acceleration = (error - prev_error) / TIME_DELAY;
+        double derivative = (error - prev_error) / TIME_DELAY;
 
         voltage = kS * std::signbit(get_velo) + kV * velocity +
-                  kA * acceleration + kP * error;
+                  kD * derivative + kP * error;
 
         if (fabs(voltage) > 12000)
             voltage = copysign(12000, voltage);
@@ -78,11 +78,11 @@ void Flywheel::end_task() {
 
 void Flywheel::set_target_velo(int velo) { velocity = velo; }
 
-void Flywheel::set_consts(double kS, double kV, double kA, double kP) {
+void Flywheel::set_consts(double kS, double kV, double kP, double kD) {
     this->kS = kS;
     this->kV = kV;
-    this->kA = kA;
     this->kP = kP;
+    this->kD = kD;
 }
 
 void Flywheel::set_speed_fast() { set_target_velo(FLYWHEEL_FAST_TARG); }

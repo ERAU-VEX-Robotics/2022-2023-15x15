@@ -45,10 +45,10 @@ class Flywheel {
      * kV: multiplies the set velocity, "describes how much voltage is needed to
      * hold (or “cruise”) at a given constant velocity" (accounting for forces
      * against the mechanism's movement that increase as velocity increases)
-     * kA: Voltage needed to induce a given acceleration
      * kP: Direct multiplier on the current error
+     * kD: Multiplier on the difference between the previous and current error
      */
-    double kS, kV, kA, kP;
+    double kS, kV, kD, kP;
 
     // The PROS task type that contains the task for the flywheel
     pros::task_t task;
