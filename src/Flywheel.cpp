@@ -19,41 +19,35 @@ Flywheel::Flywheel(std::initializer_list<int> ports,
 }
 
 void Flywheel::task_fn() {
+    const int TIME_DELAY = 2;
+
     double error = 0;
     double prev_error = 0;
-    double voltage = tbh_estimate;
-    double base_voltage = 2 * tbh_estimate - 12000;
+    int voltage = 0;
 
     while (true) {
-        if (update_tbh_consts) {
-            voltage = tbh_estimate;
-            base_voltage = 2 * tbh_estimate - 12000;
-        }
+        error = velocity - motors.get_avg_velocity();
 
-        error = flywheel_velo - motors.get_avg_velocity();
-        voltage += error * tbh_gain;
+        int get_velo = velocity; // have to extract value of velocity, as
+                                 // std::signbit doesn't accept atomic variables
 
-        if (std::signbit(error) != std::signbit(prev_error))
-            voltage = 0.5 * (voltage + base_voltage);
+        double derivative = (error - prev_error) / TIME_DELAY;
 
-        base_voltage = voltage;
+        voltage = kS * std::signbit(get_velo) + kV * velocity +
+                  kD * derivative + kP * error;
 
         if (fabs(voltage) > 12000)
             voltage = copysign(12000, voltage);
 #ifdef F_DEBUG
         printf("Flywheel error: %.2lf\n", error);
-        printf("Flywheel set voltage: %.2lf\n", voltage);
         print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE |
                         E_MOTOR_GROUP_TELEM_PRINT_CURRENT |
                         E_MOTOR_GROUP_TELEM_PRINT_TEMPERATURE |
                         E_MOTOR_GROUP_TELEM_PRINT_VELOCITY);
 #endif
         motors.move_voltage(voltage);
-#ifdef F_DEBUG
-        pros::delay(200);
-#else
-        pros::delay(2);
-#endif
+        pros::delay(TIME_DELAY);
+
         prev_error = error;
     }
 }
@@ -82,23 +76,18 @@ void Flywheel::end_task() {
     pros::c::task_delete(task);
 }
 
-void Flywheel::set_target_velo(int velo) { flywheel_velo = velo; }
+void Flywheel::set_target_velo(int velo) { velocity = velo; }
 
-void Flywheel::set_tbh_consts(double gain, double estimate) {
-    tbh_gain = gain;
-    tbh_estimate = estimate;
-    update_tbh_consts = true;
+void Flywheel::set_consts(double kS, double kV, double kP, double kD) {
+    this->kS = kS;
+    this->kV = kV;
+    this->kP = kP;
+    this->kD = kD;
 }
 
-void Flywheel::set_speed_fast() {
-    set_target_velo(FLYWHEEL_FAST_TARG);
-    set_tbh_consts(FLYWHEEL_TBH_GAIN, FLYWHEEL_FAST_ESTIMATE);
-}
+void Flywheel::set_speed_fast() { set_target_velo(FLYWHEEL_FAST_TARG); }
 
-void Flywheel::set_speed_slow() {
-    set_target_velo(FLYWHEEL_SLOW_TARG);
-    set_tbh_consts(FLYWHEEL_TBH_GAIN, FLYWHEEL_SLOW_ESTIMATE);
-}
+void Flywheel::set_speed_slow() { set_target_velo(FLYWHEEL_SLOW_TARG); }
 
 void Flywheel::driver(pros::controller_id_e_t controller,
                       pros::controller_digital_e_t pwr_button,
@@ -123,13 +112,15 @@ void Flywheel::driver(pros::controller_id_e_t controller,
     }
 }
 
-void Flywheel::set_velocity(int16_t velocity) {
+void Flywheel::set_velocity(int32_t velocity) {
     motors.move_velocity(velocity);
 }
+
+void Flywheel::set_voltage(int32_t voltage) { motors.move_voltage(voltage); }
 
 void Flywheel::stop() { motors.brake(); }
 
 void Flywheel::print_telemetry(uint8_t vals_to_print) {
-    printf("Flywheel Telemetry\n");
+    // printf("Flywheel Telemetry\n");
     motors.print_telemetry(vals_to_print);
 }

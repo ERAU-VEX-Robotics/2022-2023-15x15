@@ -16,33 +16,45 @@
 #define FLYWHEEL_FAST_TARG 600
 #define FLYWHEEL_SLOW_TARG 400
 
-#define FLYWHEEL_TBH_GAIN 0.0005
-
-#define FLYWHEEL_FAST_ESTIMATE 12000
-#define FLYWHEEL_SLOW_ESTIMATE 9681
-
 class Flywheel {
   private:
     // The motor group containing all of the motors on the flywheel
     Motor_Group motors;
 
-    std::atomic<int> flywheel_velo;
-
-    double tbh_gain, tbh_estimate = 0;
-
-    bool update_tbh_consts = false;
+    std::atomic<int> velocity;
 
     /**
-     * The PID task function. This function contains a loop that executes the
-     * code to run a PID controller for the flywheel in its own task
+     * The task function. This function contains a loop that executes the
+     * code to run the flywheel's controller in its own task
      */
     void task_fn();
 
-    // The PROS task type that contains the PID task for the flywheel
+    /**
+     * Flywheel controller constants
+     *
+     * The flywheel controller uses combination of feedforward (i.e. use the
+     * target value to set the output) and P (i.e. use the error from the
+     * target to determine output) control to set the voltage to the flywheel.
+     *
+     * See:
+     * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-flywheel.html
+     * as well as
+     * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-feedforward.html
+     *
+     * kS: voltage needed to get the motor to move
+     * kV: multiplies the set velocity, "describes how much voltage is needed to
+     * hold (or “cruise”) at a given constant velocity" (accounting for forces
+     * against the mechanism's movement that increase as velocity increases)
+     * kP: Direct multiplier on the current error
+     * kD: Multiplier on the difference between the previous and current error
+     */
+    double kS, kV, kD, kP;
+
+    // The PROS task type that contains the task for the flywheel
     pros::task_t task;
 
     /**
-     * A static function used to call pid_task_fn. The PROS task system requires
+     * A static function used to call task_fn. The PROS task system requires
      * that member functions that are passed as task functions must be static. I
      * can't make pid_task_fn static, because it includes references to the
      * Flywheel object. So, I created this function, based on information from:
@@ -64,7 +76,7 @@ class Flywheel {
     Flywheel(std::initializer_list<int> ports,
              std::initializer_list<bool> reverses);
 
-    void set_tbh_consts(double gain, double estimate);
+    void set_consts(double kS, double kV, double kA, double kP);
 
     void set_speed_slow();
     void set_speed_fast();
@@ -94,10 +106,18 @@ class Flywheel {
     /**
      * Function: set_velocity
      *
-     * This function sets the target velocity for the motors running the
+     * This function sets the velocity for the motors running the
      * flywheel.
      */
-    void set_velocity(int16_t velocity);
+    void set_velocity(int32_t velocity);
+
+    /**
+     * Function: set_voltage
+     *
+     * This function sets the voltage for the motors running the
+     * flywheel. Used mainly to determine controller gains
+     */
+    void set_voltage(int32_t voltage);
 
     /**
      * Function: stop

@@ -23,6 +23,7 @@ void initialize() {
     drive.set_settled_threshold(5);
 
     flywheel.set_speed_fast();
+    flywheel.set_consts(1047, 20.0128, 0, 0.5);
     flywheel.init_task();
     flywheel.pause_task();
 
