@@ -76,7 +76,7 @@ class Flywheel {
     Flywheel(std::initializer_list<int> ports,
              std::initializer_list<bool> reverses);
 
-    void set_consts(double kS, double kV, double kA, double kP);
+    void set_consts(double kS, double kV, double kP, double kD);
 
     void set_speed_slow();
     void set_speed_fast();
