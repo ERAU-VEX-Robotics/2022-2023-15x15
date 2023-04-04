@@ -3,7 +3,6 @@
  */
 
 #include "Intake.hpp"
-#include "pros/rtos.hpp"
 #include <initializer_list>
 
 Intake::Intake(std::initializer_list<int> ports,

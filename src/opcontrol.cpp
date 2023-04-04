@@ -1,5 +1,4 @@
 #include "main.h"
-#include "pros/misc.h"
 
 /**
  * Runs the operator control code. This function will be started in its own task

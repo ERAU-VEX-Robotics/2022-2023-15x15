@@ -1,7 +1,4 @@
 #include "Drivetrain.hpp"
-#include "pros/adi.h"
-#include "pros/misc.h"
-#include "pros/rtos.hpp"
 #include "stdio.h"
 #include "utils.h"
 #include <cmath>

@@ -1,6 +1,4 @@
 #include "Indexer.hpp"
-#include "pros/misc.h"
-#include "pros/motors.h"
 
 #define INDEXER_VELO 60
 
