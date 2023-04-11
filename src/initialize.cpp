@@ -16,11 +16,11 @@ void initialize() {
     // GUI init
     gui_init();
 
-    drive.set_drivetrain_dimensions(12.5, 1.625, 1);
-    // drive.set_drivetrain_dimensions(12.5, 2, 1);
-    drive.set_pid_straight_consts(45, 0.01, 0);
-    drive.set_pid_turn_consts(35, 0.01, 0);
-    drive.set_settled_threshold(5);
+    drive.set_drivetrain_dimensions(12.5, 1.625, 60.0 / 36.0);
+    /// drive.set_drivetrain_dimensions(12.5, 2, 1);
+    drive.set_pid_straight_consts(600, 0, 0);
+    drive.set_pid_turn_consts(600, 0, 0);
+    drive.set_settled_threshold(10);
 
     flywheel.set_speed_fast();
     flywheel.set_consts(1047, 20.0128, 0.5, 0);
