@@ -119,21 +119,14 @@ void Drivetrain::pid_task_fn() {
             right_voltage = 0;
             left_motors.brake();
             right_motors.brake();
-            pros::delay(20);
+            pros::delay(5);
 
             continue;
-        } else if (use_turn_consts) {
-            left_voltage = left_error * kP_turn + left_integral * kI_turn +
-                           (left_error - left_prev_error) * kD_turn;
-            right_voltage = right_error * kP_turn + right_integral * kI_turn +
-                            (right_error - right_prev_error) * kD_turn;
         } else {
-            left_voltage = left_error * kP_straight +
-                           left_integral * kI_straight +
-                           (left_error - left_prev_error) * kD_straight;
-            right_voltage = right_error * kP_straight +
-                            right_integral * kI_straight +
-                            (right_error - right_prev_error) * kD_straight;
+            left_voltage = left_error * kP + left_integral * kI +
+                           (left_error - left_prev_error) * kD;
+            right_voltage = right_error * kP + right_integral * kI +
+                            (right_error - right_prev_error) * kD;
         }
 
         if (abs(left_voltage) > 12000)
@@ -151,27 +144,18 @@ void Drivetrain::pid_task_fn() {
 #endif
         left_prev_error = left_error;
         right_prev_error = right_error;
-        pros::delay(20);
+        pros::delay(2);
     }
 }
 
-void Drivetrain::set_pid_straight_consts(double Pconst, double Iconst,
-                                         double Dconst) {
-    kP_straight = Pconst;
-    kI_straight = Iconst;
-    kD_straight = Dconst;
-}
-
-void Drivetrain::set_pid_turn_consts(double Pconst, double Iconst,
-                                     double Dconst) {
-    kP_turn = Pconst;
-    kI_turn = Iconst;
-    kD_turn = Dconst;
+void Drivetrain::set_pid_consts(double Pconst, double Iconst, double Dconst) {
+    kP = Pconst;
+    kI = Iconst;
+    kD = Dconst;
 }
 
 void Drivetrain::move_straight(double inches) {
     double temp = convert_inches_to_degrees(inches);
-    use_turn_consts = false;
 
     reset_pid_state(temp, temp);
 }
@@ -182,7 +166,6 @@ void Drivetrain::turn_angle(double angle) {
     // This consists of 2 parts. First, we turn the angle into the number of
     // inches each side needs to move. Then, we turn that into degrees
     double temp = convert_inches_to_degrees(arc_len(angle, track_distance));
-    use_turn_consts = true;
 
     reset_pid_state(temp, -temp);
 }

@@ -24,7 +24,7 @@ class Drivetrain {
     Motor_Group left_motors, right_motors;
 
     // The Drivetrain's PID constants, both for moving straight and for turning
-    double kP_straight, kP_turn, kI_straight, kI_turn, kD_straight, kD_turn = 0;
+    double kP, kI, kD = 0;
 
     // The threshold for when to set is_settled to true, in degrees.
     double settled_threshold = 10;
@@ -42,9 +42,6 @@ class Drivetrain {
     // accurately track the rotation of the robot's wheels, allowing us to move
     // the robot with high precision.
     pros::c::adi_encoder_t left_encdr, right_encdr;
-
-    // Boolean tracking which PID constants to use
-    std::atomic<bool> use_turn_consts = false;
 
     // Boolean tracking whether the drivetrain PID has stopped. Used to
     // determine if the drivetrain has completed it's action during the
@@ -166,11 +163,10 @@ class Drivetrain {
      */
     // straight constants are used when the robot travels in a straight line,
     // while turn constants are used while turning
-    void set_pid_straight_consts(double Pconst, double Iconst, double Dconst);
-    void set_pid_turn_consts(double Pconst, double Iconst, double Dconst);
+    void set_pid_consts(double Pconst, double Iconst, double Dconst);
 
     /**
-     * Function: move_straight
+     * Function: move
      * This function updates the values of the left and right PID targets to
      * make the robot move forward a given number of inches.
      * @param inches  The number of inches to move forward. Negative values
