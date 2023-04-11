@@ -1,6 +1,5 @@
 #include "Drivetrain.hpp"
 #include "stdio.h"
-#include "utils.h"
 #include <cmath>
 
 Drivetrain::Drivetrain(std::initializer_list<int> left_ports,
@@ -40,7 +39,7 @@ double Drivetrain::convert_inches_to_degrees(double inches) {
      * the rotation of the wheel is undercounted. Thus, multiplying by the gear
      * ratio accounts for this undermeasuring.
      */
-    return inches / tracking_wheel_radius * 180 / 3.1415 *
+    return inches / tracking_wheel_radius * 180 / 3.1415 /
            tracking_wheel_gear_ratio;
 }
 
@@ -83,6 +82,9 @@ void Drivetrain::pid_task_fn() {
             right_error = right_targ - right_motors.get_avg_position();
         }
 
+        left_integral += left_error;
+        right_integral += right_error;
+
         if (reset_pid_vars) {
             left_integral = 0;
             left_prev_error = 0;
@@ -102,24 +104,36 @@ void Drivetrain::pid_task_fn() {
 
         int left_voltage, right_voltage;
 
+        if (left_error == left_prev_error && right_error == right_prev_error) {
+            ++count;
+        } else
+            count = 0;
+
+        if (count > 5) {
+            is_settled = true;
+            count = 0;
+        }
+
         if (is_settled) {
             left_voltage = 0;
             right_voltage = 0;
             left_motors.brake();
             right_motors.brake();
+            pros::delay(20);
 
             continue;
         } else if (use_turn_consts) {
-            left_voltage = pid(kP_turn, kI_turn, kD_turn, left_error,
-                               &left_integral, &left_prev_error);
-            right_voltage = pid(kP_turn, kI_turn, kD_turn, right_error,
-                                &right_integral, &right_prev_error);
+            left_voltage = left_error * kP_turn + left_integral * kI_turn +
+                           (left_error - left_prev_error) * kD_turn;
+            right_voltage = right_error * kP_turn + right_integral * kI_turn +
+                            (right_error - right_prev_error) * kD_turn;
         } else {
-            left_voltage = pid(kP_straight, kI_straight, kD_straight,
-                               left_error, &left_integral, &left_prev_error);
-            right_voltage =
-                pid(kP_straight, kI_straight, kD_straight, right_error,
-                    &right_integral, &right_prev_error);
+            left_voltage = left_error * kP_straight +
+                           left_integral * kI_straight +
+                           (left_error - left_prev_error) * kD_straight;
+            right_voltage = right_error * kP_straight +
+                            right_integral * kI_straight +
+                            (right_error - right_prev_error) * kD_straight;
         }
 
         if (abs(left_voltage) > 12000)
@@ -129,21 +143,14 @@ void Drivetrain::pid_task_fn() {
         left_motors.move_voltage(left_voltage);
         right_motors.move_voltage(right_voltage);
 
-        if (left_error == left_prev_error && right_error == right_prev_error) {
-            ++count;
-        } else
-            count = 0;
-
-        if (count > 25) {
-            is_settled = true;
-            count = 0;
-        }
-
 #ifdef D_DEBUG
         printf("Left Error: %.2lf\nRight Error: %.2lf\nSettled: %d\n",
                left_error, right_error, is_settled.load());
-
+        print_telemetry(E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE,
+                        E_MOTOR_GROUP_TELEM_PRINT_VOLTAGE);
 #endif
+        left_prev_error = left_error;
+        right_prev_error = right_error;
         pros::delay(20);
     }
 }
