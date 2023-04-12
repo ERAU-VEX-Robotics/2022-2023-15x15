@@ -1,12 +1,13 @@
 #include "Indexer.hpp"
 
-#define INDEXER_VELO 60
+#define INDEXER_VELO 120
+#define INDEXER_ROTATION 360
 
 Indexer::Indexer(std::initializer_list<int> ports,
                  std::initializer_list<bool> revs)
     : motors(ports, revs) {
     motors.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-    motors.set_gearing(pros::E_MOTOR_GEAR_RED);
+    motors.set_gearing(pros::E_MOTOR_GEAR_GREEN);
 }
 
 void Indexer::set_rotation(int degrees_to_rotate) {
@@ -14,10 +15,9 @@ void Indexer::set_rotation(int degrees_to_rotate) {
 }
 
 void Indexer::punch_disk() {
-    motors.move_velocity(INDEXER_VELO);
-    pros::delay(1000);
-    motors.move(0);
-    pros::delay(100);
+    motors.reset_positions();
+    motors.move_relative(INDEXER_ROTATION, INDEXER_VELO);
+    pros::delay(2000);
 }
 
 void Indexer::driver(pros::controller_id_e_t controller,
