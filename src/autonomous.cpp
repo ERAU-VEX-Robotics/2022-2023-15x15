@@ -15,10 +15,24 @@ void autonomous() {
     flywheel.resume_task();
     drive.init_pid_task();
 
+    drive.set_voltage_limit(7000);
+
     // Drive PID tuning programs
     // Straight
     /*
+    drive.move_straight(72);
+    drive.wait_until_settled();
+
+    drive.move_straight(-60);
+    drive.wait_until_settled();
+
     drive.move_straight(48);
+    drive.wait_until_settled();
+
+    drive.move_straight(-36);
+    drive.wait_until_settled();
+
+    drive.move_straight(24);
     drive.wait_until_settled();
 
     drive.move_straight(-12);
@@ -27,8 +41,9 @@ void autonomous() {
     drive.move_straight(6);
     drive.wait_until_settled();
 
-    drive.move_straight(-24);
+    drive.move_straight(-3);
     drive.wait_until_settled();
+
     */
 
     // Turn
@@ -53,23 +68,26 @@ void autonomous() {
     */
 
     // Move to the roller and score it
-    drive.move_straight(-19.5);
+    flywheel.set_target_velo(527);
+
+    drive.move_straight(-24);
     drive.wait_until_settled();
     drive.turn_angle(90);
     drive.wait_until_settled();
 
-    flywheel.set_target_velo(550);
-
-    drive.move_straight(-5.1);
+    drive.move_straight(-6);
     drive.wait_until_settled();
 
-    roller.counterclockwise(120);
+    roller.counterclockwise(150);
 
     // Fire preloads into high goal
     drive.move_straight(4);
     drive.wait_until_settled();
-    drive.turn_angle(10);
+    drive.turn_angle(5);
     drive.wait_until_settled();
+    drive.move_straight(0);
+    pros::c::adi_digital_write('b', true);
+    pros::delay(1500);
 
     indexer.punch_disk();
     pros::delay(1000);
@@ -86,27 +104,17 @@ void autonomous() {
 
     intake.in();
     flywheel.resume_task();
-    flywheel.set_target_velo(425);
+    flywheel.set_target_velo(420);
 
-    drive.move_straight(-16);
-    drive.wait_until_settled();
-    drive.turn_angle(-10);
-    drive.wait_until_settled();
-    drive.move_straight(-16);
-    drive.wait_until_settled();
-    pros::delay(1000);
-
-    drive.move_straight(-16);
-    drive.wait_until_settled();
-    drive.turn_angle(5);
-    drive.wait_until_settled();
-    drive.move_straight(-16);
+    drive.move_straight(-64);
     drive.wait_until_settled();
 
-    drive.turn_angle(-95);
+    drive.turn_angle(-82);
     drive.wait_until_settled();
     pros::delay(3000);
     intake.stop();
+    indexer.punch_disk();
+    pros::delay(2000);
     indexer.punch_disk();
     pros::delay(2000);
     indexer.punch_disk();
