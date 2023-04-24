@@ -18,14 +18,18 @@ void initialize() {
 
     drive.set_drivetrain_dimensions(12.5, 1.625, 60.0 / 36.0);
     /// drive.set_drivetrain_dimensions(12.5, 2, 1);
+    //  drive.add_adi_encoders('e', 'f', false, 'g', 'h', false);
     drive.set_pid_consts(600, 0, 0);
     drive.set_settled_threshold(10);
 
     flywheel.set_speed_fast();
-    flywheel.set_consts(1047, 20.0128, 0.5, 0);
+    flywheel.set_consts(1047, 20.0128, 2, 0);
     flywheel.init_task();
     flywheel.pause_task();
 
+    // beginning expansion
+    pros::c::adi_port_set_config('b', pros::E_ADI_DIGITAL_OUT);
+    // endgame expansion
     pros::c::adi_port_set_config('d', pros::E_ADI_DIGITAL_OUT);
 }
 
