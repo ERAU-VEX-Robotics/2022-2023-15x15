@@ -15,6 +15,10 @@
  */
 void opcontrol() {
     flywheel.resume_task();
+
+    pros::c::adi_digital_write('b', true);
+    drive.set_voltage_limit(12000);
+
     bool endgame_primed = false;
 
     while (true) {
