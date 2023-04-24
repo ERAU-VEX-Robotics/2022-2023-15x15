@@ -218,6 +218,8 @@ class Drivetrain {
                                    double tracking_wheel_rad,
                                    double gear_ratio);
 
+    void set_voltage_limit(int limit);
+
     /**
      * Function: print_telemetry
      *

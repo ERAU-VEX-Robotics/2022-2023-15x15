@@ -205,6 +205,13 @@ void Drivetrain::set_drivetrain_dimensions(double tw, double twr,
     tracking_wheel_gear_ratio = gear_ratio;
 }
 
+void Drivetrain::set_voltage_limit(int limit) {
+    // Limit for left side is greater, as at the same limits, the robot pulls to
+    // the left
+    left_motors.set_voltage_limits(limit);
+    right_motors.set_voltage_limits(limit - 500);
+}
+
 void Drivetrain::tank_driver(pros::controller_id_e_t controller,
                              pros::controller_digital_e_t rev_btn) {
 
