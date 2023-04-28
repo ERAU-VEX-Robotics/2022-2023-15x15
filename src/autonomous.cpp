@@ -13,9 +13,9 @@
  */
 void autonomous() {
     flywheel.resume_task();
-    drive.init_pid_task();
+    drive.resume_pid_task();
 
-    drive.set_voltage_limit(7000);
+    drive.set_voltage_limit(6750);
 
     // Drive PID tuning programs
     // Straight
@@ -68,24 +68,23 @@ void autonomous() {
     */
 
     // Move to the roller and score it
-    flywheel.set_target_velo(527);
+    flywheel.set_target_velo(533);
 
     drive.move_straight(-24);
     drive.wait_until_settled();
     drive.turn_angle(90);
     drive.wait_until_settled();
 
-    drive.move_straight(-6);
+    drive.move_straight(-10);
     drive.wait_until_settled();
 
-    roller.counterclockwise(150);
+    roller.counterclockwise(120);
 
     // Fire preloads into high goal
     drive.move_straight(4);
     drive.wait_until_settled();
-    drive.turn_angle(5);
+    drive.turn_angle(12);
     drive.wait_until_settled();
-    drive.move_straight(0);
     pros::c::adi_digital_write('b', true);
     pros::delay(1500);
 
@@ -95,28 +94,30 @@ void autonomous() {
     pros::delay(1000);
     flywheel.pause_task();
 
-    drive.turn_angle(90);
+    drive.turn_angle(140);
     drive.wait_until_settled();
-    drive.move_straight(-1);
+
+    pros::c::adi_digital_write('b', false);
+
+    drive.move_straight(-5);
     drive.wait_until_settled();
-    drive.turn_angle(35);
+
+    drive.turn_angle(-8);
     drive.wait_until_settled();
 
     intake.in();
     flywheel.resume_task();
-    flywheel.set_target_velo(420);
+    flywheel.set_target_velo(470);
 
-    drive.move_straight(-64);
+    drive.move_straight(-60);
     drive.wait_until_settled();
 
-    drive.turn_angle(-82);
+    drive.turn_angle(-90);
     drive.wait_until_settled();
     pros::delay(3000);
     intake.stop();
     indexer.punch_disk();
-    pros::delay(2000);
     indexer.punch_disk();
-    pros::delay(2000);
     indexer.punch_disk();
 
     switch (auton_id) {
@@ -138,6 +139,6 @@ void autonomous() {
         break;
     }
 
-    drive.end_pid_task();
+    drive.pause_pid_task();
     flywheel.pause_task();
 }
