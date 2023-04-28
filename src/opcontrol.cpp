@@ -14,6 +14,7 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+    drive.pause_pid_task();
     flywheel.resume_task();
 
     pros::c::adi_digital_write('b', true);
@@ -44,4 +45,5 @@ void opcontrol() {
         pros::delay(2);
     }
     flywheel.end_task();
+    drive.end_pid_task();
 }

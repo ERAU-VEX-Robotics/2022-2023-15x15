@@ -3,7 +3,7 @@
 Drivetrain drive({11, 12}, {13, 16}, {true, true}, {false, false});
 // Drivetrain drive({6}, {8}, {true}, {false});
 Intake intake({7}, {false});
-Flywheel flywheel({18}, {true});
+Flywheel flywheel({6}, {true});
 Indexer indexer({19}, {false});
 Roller roller({5}, {true}, 1);
 /**
@@ -21,6 +21,8 @@ void initialize() {
     //  drive.add_adi_encoders('e', 'f', false, 'g', 'h', false);
     drive.set_pid_consts(600, 0, 0);
     drive.set_settled_threshold(10);
+    drive.init_pid_task();
+    drive.pause_pid_task();
 
     flywheel.set_speed_fast();
     flywheel.set_consts(1047, 20.0128, 2, 0);
@@ -38,7 +40,10 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+    drive.pause_pid_task();
+    flywheel.pause_task();
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field

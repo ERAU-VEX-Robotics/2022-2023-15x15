@@ -181,6 +181,10 @@ void Drivetrain::set_velo(int left_velo, int right_velo) {
     right_motors.move_velocity(right_velo);
 }
 
+void Drivetrain::pause_pid_task() { pros::c::task_suspend(pid_task); }
+
+void Drivetrain::resume_pid_task() { pros::c::task_resume(pid_task); }
+
 void Drivetrain::end_pid_task() {
     pros::c::task_delete(pid_task);
     left_motors.move(0);
@@ -206,10 +210,8 @@ void Drivetrain::set_drivetrain_dimensions(double tw, double twr,
 }
 
 void Drivetrain::set_voltage_limit(int limit) {
-    // Limit for left side is greater, as at the same limits, the robot pulls to
-    // the left
     left_motors.set_voltage_limits(limit);
-    right_motors.set_voltage_limits(limit - 500);
+    right_motors.set_voltage_limits(limit);
 }
 
 void Drivetrain::tank_driver(pros::controller_id_e_t controller,

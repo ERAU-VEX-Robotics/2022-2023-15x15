@@ -186,6 +186,11 @@ class Drivetrain {
 
     // Initializes pid_task, starting the Drivetrain PID task
     void init_pid_task();
+
+    void pause_pid_task();
+
+    void resume_pid_task();
+
     // Removes/deletes the Drivetrain PID task. Should always be called at the
     // end of autonomous().
     void end_pid_task();
