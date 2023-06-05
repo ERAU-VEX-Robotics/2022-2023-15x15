@@ -38,8 +38,6 @@ EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/Flywheel,$(foreach cext,$(CEXTS)
 EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/Roller,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
 EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/Intake,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
 EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/Motor_Group,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
-EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/utils,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
-EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/gui,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
 EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/Indexer,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
 
 # files that get distributed to every user (beyond your source archive) - add

@@ -17,6 +17,8 @@ void opcontrol() {
     drive.pause_pid_task();
     flywheel.resume_task();
 
+    flywheel.set_speed_slow();
+
     pros::c::adi_digital_write('b', true);
     drive.set_voltage_limit(12000);
 

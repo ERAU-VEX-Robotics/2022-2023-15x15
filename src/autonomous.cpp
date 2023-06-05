@@ -68,7 +68,7 @@ void autonomous() {
     */
 
     // Move to the roller and score it
-    flywheel.set_target_velo(533);
+    flywheel.set_target_velo(520);
 
     drive.move_straight(-24);
     drive.wait_until_settled();
@@ -85,7 +85,6 @@ void autonomous() {
     drive.wait_until_settled();
     drive.turn_angle(12);
     drive.wait_until_settled();
-    pros::c::adi_digital_write('b', true);
     pros::delay(1500);
 
     indexer.punch_disk();
@@ -94,9 +93,15 @@ void autonomous() {
     pros::delay(1000);
     flywheel.pause_task();
 
-    drive.turn_angle(140);
+    // Pick up 3 disks in middle
+    drive.turn_angle(125);
     drive.wait_until_settled();
 
+    pros::c::adi_digital_write('b', true);
+
+    pros::delay(5000);
+
+    // Close solenoids for disk guides
     pros::c::adi_digital_write('b', false);
 
     drive.move_straight(-5);
@@ -112,7 +117,8 @@ void autonomous() {
     drive.move_straight(-60);
     drive.wait_until_settled();
 
-    drive.turn_angle(-90);
+    // Fire 3 disks
+    drive.turn_angle(-80);
     drive.wait_until_settled();
     pros::delay(3000);
     intake.stop();

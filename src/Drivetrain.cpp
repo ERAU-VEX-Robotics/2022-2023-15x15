@@ -259,6 +259,35 @@ void Drivetrain::tank_driver_poly(pros::controller_id_e_t controller,
     right_motors.move(right * std::pow((std::abs(right) / 127.0), pow - 1));
 }
 
+void Drivetrain::arcade_driver(pros::controller_id_e_t controller,
+                               pros::controller_digital_e_t rev_btn,
+                               bool use_right) {
+    int power;
+    int turn;
+    if (use_right) {
+        power = pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+        turn = pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_RIGHT_X);
+    } else {
+        power = pros::c::controller_get_analog(
+            controller, pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        turn = pros::c::controller_get_analog(controller,
+                                              pros::E_CONTROLLER_ANALOG_LEFT_X);
+    }
+
+    if (pros::c::controller_get_digital_new_press(controller, rev_btn))
+        rev_control = !rev_control;
+
+    if (rev_control) {
+        left_motors.move(-power + turn);
+        right_motors.move(-power - turn);
+    } else {
+        left_motors.move(power + turn);
+        right_motors.move(power - turn);
+    }
+}
+
 void Drivetrain::print_telemetry(uint8_t left_vals, uint8_t right_vals) {
     if (left_vals) {
         printf("Left Motor Telemetry\n");

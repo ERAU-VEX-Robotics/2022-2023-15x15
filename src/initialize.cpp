@@ -24,7 +24,6 @@ void initialize() {
     drive.init_pid_task();
     drive.pause_pid_task();
 
-    flywheel.set_speed_fast();
     flywheel.set_consts(1047, 20.0128, 2, 0);
     flywheel.init_task();
     flywheel.pause_task();
