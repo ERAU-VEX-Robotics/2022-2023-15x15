@@ -34,7 +34,8 @@ class Indexer {
 
     // Function that controls the indexer in opcontrol
     void driver(pros::controller_id_e_t controller,
-                pros::controller_digital_e_t fire_btn);
+                pros::controller_digital_e_t fire_btn,
+                pros::controller_digital_e_t pullback_btn);
 
     // Moves the gear enough to send one disk into the flywheel
     void punch_disk();

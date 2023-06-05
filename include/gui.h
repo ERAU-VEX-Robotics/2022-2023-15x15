@@ -9,8 +9,6 @@ extern "C" {
 
 enum auton { none, skills_best, skills_real, match_best, match_real, test };
 
-extern enum auton auton_id;
-
 void gui_init();
 
 #ifdef __cplusplus

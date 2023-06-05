@@ -1,10 +1,11 @@
 #include "Indexer.hpp"
 #include "main.h"
-Drivetrain drive({17, 18}, {15, 16}, {true, true}, {false, false});
-Intake intake({8}, {true});
-Flywheel flywheel({20}, {true});
-Indexer indexer({12}, {false});
-Roller roller({10}, {false}, 1);
+Drivetrain drive({11, 12}, {13, 16}, {true, true}, {false, false});
+// Drivetrain drive({6}, {8}, {true}, {false});
+Intake intake({7}, {false});
+Flywheel flywheel({6}, {true});
+Indexer indexer({19}, {false});
+Roller roller({5}, {true}, 1);
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -15,16 +16,22 @@ void initialize() {
     // GUI init
     gui_init();
 
-    drive.set_drivetrain_dimensions(14.5, 1.625, 1);
-    drive.set_pid_straight_consts(5, 1, 0);
-    drive.set_pid_turn_consts(3, 1, 0);
-    drive.add_adi_encoders('c', 'd', false, 'g', 'h', false);
+    drive.set_drivetrain_dimensions(12.5, 1.625, 60.0 / 36.0);
+    /// drive.set_drivetrain_dimensions(12.5, 2, 1);
+    //  drive.add_adi_encoders('e', 'f', false, 'g', 'h', false);
+    drive.set_pid_consts(600, 0, 0);
+    drive.set_settled_threshold(10);
+    drive.init_pid_task();
+    drive.pause_pid_task();
 
-    flywheel.set_pid_consts(50, 8, 1);
-    flywheel.init_pid_task();
-    flywheel.pause_pid_task();
+    flywheel.set_consts(1047, 20.0128, 2, 0);
+    flywheel.init_task();
+    flywheel.pause_task();
 
-    indexer.set_rotation(120);
+    // beginning expansion
+    pros::c::adi_port_set_config('b', pros::E_ADI_DIGITAL_OUT);
+    // endgame expansion
+    pros::c::adi_port_set_config('d', pros::E_ADI_DIGITAL_OUT);
 }
 
 /**
@@ -32,7 +39,10 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+    drive.pause_pid_task();
+    flywheel.pause_task();
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field

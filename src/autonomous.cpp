@@ -1,7 +1,4 @@
-#include "Flywheel.hpp"
-#include "externs.hpp"
 #include "main.h"
-#include "pros/rtos.hpp"
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -15,73 +12,125 @@
  * from where it left off.
  */
 void autonomous() {
-    flywheel.resume_pid_task();
-    drive.init_pid_task();
+    flywheel.resume_task();
+    drive.resume_pid_task();
+
+    drive.set_voltage_limit(6750);
+
+    // Drive PID tuning programs
+    // Straight
+    /*
+    drive.move_straight(72);
+    drive.wait_until_settled();
+
+    drive.move_straight(-60);
+    drive.wait_until_settled();
+
+    drive.move_straight(48);
+    drive.wait_until_settled();
+
+    drive.move_straight(-36);
+    drive.wait_until_settled();
+
+    drive.move_straight(24);
+    drive.wait_until_settled();
+
+    drive.move_straight(-12);
+    drive.wait_until_settled();
+
+    drive.move_straight(6);
+    drive.wait_until_settled();
+
+    drive.move_straight(-3);
+    drive.wait_until_settled();
+
+    */
+
+    // Turn
+    /*
+    drive.turn_angle(180);
+    drive.wait_until_settled();
+
+    drive.turn_angle(-150);
+    drive.wait_until_settled();
+
+    drive.turn_angle(120);
+    drive.wait_until_settled();
+
+    drive.turn_angle(-90);
+    drive.wait_until_settled();
+
+    drive.turn_angle(60);
+    drive.wait_until_settled();
+
+    drive.turn_angle(-30);
+    drive.wait_until_settled();
+    */
+
+    // Move to the roller and score it
+    flywheel.set_target_velo(520);
+
+    drive.move_straight(-24);
+    drive.wait_until_settled();
+    drive.turn_angle(90);
+    drive.wait_until_settled();
+
+    drive.move_straight(-10);
+    drive.wait_until_settled();
+
+    roller.counterclockwise(120);
+
+    // Fire preloads into high goal
+    drive.move_straight(4);
+    drive.wait_until_settled();
+    drive.turn_angle(12);
+    drive.wait_until_settled();
+    pros::delay(1500);
+
+    indexer.punch_disk();
+    pros::delay(1000);
+    indexer.punch_disk();
+    pros::delay(1000);
+    flywheel.pause_task();
+
+    // Pick up 3 disks in middle
+    drive.turn_angle(125);
+    drive.wait_until_settled();
+
+    pros::c::adi_digital_write('b', true);
+
+    pros::delay(5000);
+
+    // Close solenoids for disk guides
+    pros::c::adi_digital_write('b', false);
+
+    drive.move_straight(-5);
+    drive.wait_until_settled();
+
+    drive.turn_angle(-8);
+    drive.wait_until_settled();
+
+    intake.in();
+    flywheel.resume_task();
+    flywheel.set_target_velo(470);
+
+    drive.move_straight(-60);
+    drive.wait_until_settled();
+
+    // Fire 3 disks
+    drive.turn_angle(-80);
+    drive.wait_until_settled();
+    pros::delay(3000);
+    intake.stop();
+    indexer.punch_disk();
+    indexer.punch_disk();
+    indexer.punch_disk();
 
     switch (auton_id) {
     case test:
+
         break;
     case skills_best:
-        // Launch pre-loads into low goal
-        indexer.punch_disk();
-        pros::delay(250);
-        indexer.punch_disk();
-        pros::delay(250);
-        flywheel.pause_pid_task();
-
-        // Drive to roller
-        drive.move_straight(24);
-        drive.wait_until_settled();
-        drive.turn_angle(90);
-        drive.wait_until_settled();
-        drive.move_straight(2);
-        drive.wait_until_settled();
-
-        // Score roller
-        roller.clockwise(90);
-        pros::delay(1000);
-
-        // Turn to grab disks
-        drive.move_straight(-2);
-        drive.wait_until_settled();
-        drive.turn_angle(135);
-        drive.wait_until_settled();
-        intake.in();
-
-        // Grab 3 disks
-        drive.move_straight(68);
-        drive.wait_until_settled();
-        intake.stop();
-        flywheel.resume_pid_task();
-
-        // Shoot disks
-        drive.turn_angle(93);
-        drive.wait_until_settled();
-        indexer.punch_disk();
-        pros::delay(250);
-        indexer.punch_disk();
-        pros::delay(250);
-        indexer.punch_disk();
-        pros::delay(250);
-
-        // Go for the stack of 3 disks
-        intake.in();
-        drive.turn_angle(-93);
-        drive.wait_until_settled();
-        drive.move_straight(34);
-        drive.wait_until_settled();
-        pros::delay(2000);
-        intake.stop();
-
-        // Launch the three disks
-        drive.turn_angle(100);
-        drive.wait_until_settled();
-        indexer.punch_disk();
-        pros::delay(250);
-        indexer.punch_disk();
-        pros::delay(250);
-        indexer.punch_disk();
-        pros::delay(250);
 
         break;
     case skills_real:
@@ -96,6 +145,6 @@ void autonomous() {
         break;
     }
 
-    drive.end_pid_task();
-    flywheel.pause_pid_task();
+    drive.pause_pid_task();
+    flywheel.pause_task();
 }

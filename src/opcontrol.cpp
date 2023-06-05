@@ -14,25 +14,27 @@
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-    flywheel.resume_pid_task();
-    pros::c::adi_port_set_config('e', pros::E_ADI_DIGITAL_OUT);
+    drive.pause_pid_task();
+    flywheel.resume_task();
+
+    flywheel.set_speed_slow();
+
+    pros::c::adi_digital_write('b', true);
+    drive.set_voltage_limit(12000);
+
     bool endgame_primed = false;
 
     while (true) {
         drive.tank_driver_poly(pros::E_CONTROLLER_MASTER, 1.3,
-                               pros::E_CONTROLLER_DIGITAL_RIGHT,
-                               pros::E_CONTROLLER_DIGITAL_LEFT);
-        flywheel.driver(pros::E_CONTROLLER_MASTER,
-                        pros::E_CONTROLLER_DIGITAL_L1,
-                        pros::E_CONTROLLER_DIGITAL_L2);
-        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A);
+                               pros::E_CONTROLLER_DIGITAL_RIGHT);
+        flywheel.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_A,
+                        pros::E_CONTROLLER_DIGITAL_B);
+        indexer.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_L1,
+                       pros::E_CONTROLLER_DIGITAL_L2);
         intake.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_R1,
                       pros::E_CONTROLLER_DIGITAL_R2);
-
         roller.driver(pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_UP,
                       pros::E_CONTROLLER_DIGITAL_DOWN);
-
-        pros::delay(2);
 
         if (pros::c::controller_get_digital_new_press(
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_X))
@@ -40,7 +42,10 @@ void opcontrol() {
         if (pros::c::controller_get_digital_new_press(
                 pros::E_CONTROLLER_MASTER, pros::E_CONTROLLER_DIGITAL_Y) &&
             endgame_primed)
-            pros::c::adi_digital_write('e', true);
+            pros::c::adi_digital_write('d', true);
+
+        pros::delay(2);
     }
-    flywheel.end_pid_task();
+    flywheel.end_task();
+    drive.end_pid_task();
 }
